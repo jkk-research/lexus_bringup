@@ -6,6 +6,7 @@
 ```
 cd ~/ros2_ws/src
 git clone https://github.com/jkk-research/lexus_bringup
+cd ~/ros2_ws
 colcon build --packages-select lexus_bringup
 ```
 
