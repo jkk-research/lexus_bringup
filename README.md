@@ -12,7 +12,8 @@ colcon build --packages-select lexus_bringup
 
 ```
 source ~/ros2_ws/install/local_setup.bash && source ~/ros2_ws/install/setup.bash
-ros2 launch lexus_bringup drivers/can_pacmod3.launch.xml
+ros2 launch lexus_bringup gps_duro_reference.launch.py
+ros2 launch lexus_bringup can_pacmod3.launch.xml
 ```
 
 
