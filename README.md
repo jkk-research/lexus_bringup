@@ -14,6 +14,23 @@ colcon build --packages-select lexus_bringup
 source ~/ros2_ws/install/local_setup.bash && source ~/ros2_ws/install/setup.bash
 ros2 launch lexus_bringup gps_duro_reference.launch.py
 ros2 launch lexus_bringup can_pacmod3.launch.xml
+ros2 launch lexus_bringup os_64_center_a.launch.py 
+ros2 launch lexus_bringup zed_default_a.launch.py 
+ros2 launch lexus_bringup rviz00.launch.py 
+```
+
+## Zed 
+```
+colcon build --symlink-install --packages-select zed_interfaces zed_components zed_wrapper zed_ros2 --cmake-args=-DCMAKE_BUILD_TYPE=Release
+```
+## Useful
+``` bash
+dev@u22glx:~$ colcon_cd lexus_bringup
+dev@u22glx:~/ros2_ws/src/lexus_bringup(main)$ 
+```
+
+``` c
+rviz2 -d $(colcon_cd lexus_bringup && pwd)/etc/lexus00.rviz
 ```
 
 
