@@ -30,8 +30,8 @@ dev@u22glx:~/ros2_ws/src/lexus_bringup(main)$
 ```
 
 ``` c
-ros2 run tf2_ros static_transform_publisher --x 697237.0 --y 5285644.0 --z 0.0 --qx 1.0 --qy 0.0 --qz 0.0 --qw 1.0 --frame-id map --child-frame-id map_gyor_0
-ros2 run tf2_ros static_transform_publisher --x 639770.0 --y 5195040.0 --z 0.0 --qx 1.0 --qy 0.0 --qz 0.0 --qw 1.0 --frame-id map --child-frame-id map_zala_0
+ros2 run tf2_ros static_transform_publisher --x 697237.0 --y 5285644.0 --z 0.0 --qx 0.0 --qy 0.0 --qz 0.0 --qw 1.0 --frame-id map --child-frame-id map_gyor_0
+ros2 run tf2_ros static_transform_publisher --x 639770.0 --y 5195040.0 --z 0.0 --qx 0.0 --qy 0.0 --qz 0.0 --qw 1.0 --frame-id map --child-frame-id map_zala_0
 ```
 
 
