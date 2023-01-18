@@ -35,6 +35,7 @@ def generate_launch_description():
     share_dir = get_package_share_directory('lexus_bringup')
     parameter_file = LaunchConfiguration('params_file')
     node_name = 'ouster_driver'
+    node_id = 'os_center'
 
     # Acquire the driver param file
     params_declare = DeclareLaunchArgument('params_file',
@@ -44,12 +45,13 @@ def generate_launch_description():
 
     driver_node = LifecycleNode(package='ros2_ouster',
                                 executable='ouster_driver',
-                                name=node_name,
+                                name=node_name, ## TODO
                                 output='screen',
                                 emulate_tty=True,
                                 parameters=[parameter_file],
                                 arguments=['--ros-args', '--log-level', 'INFO'],
                                 namespace='/',
+                                remappings=[('/points', node_id + '/points')],
                                 )
 
     configure_event = EmitEvent(
