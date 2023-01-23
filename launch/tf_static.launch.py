@@ -65,7 +65,7 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='left1_os_front_tf_publisher',
             output='screen',
-            arguments=['1.6', '0.5', '1.3','0', '0', '0', '1','base_link','os_left_a'],
+            arguments=['1.6', '0.5', '1.3','3.14159', '0', '0', 'base_link','os_left_a'],
         ),
         Node(
             package='tf2_ros',
@@ -73,7 +73,7 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='right1_os_front_tf_publisher',
             output='screen',
-            arguments=['1.53', '-0.5', '1.41','0', '0', '0', '1','base_link','os_right_a'],
+            arguments=['1.53', '-0.5', '1.41','3.14159', '0', '0','base_link','os_right_a'],
         ),
         Node(
             package='tf2_ros',
@@ -81,6 +81,6 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='center1_os_front_tf_publisher',
             output='screen',
-            arguments=['0.75', '0.0', '1.91','0', '0', '0', '1','base_link','os_center_a'],
+            arguments=['0.75', '0.0', '1.91','3.14159', '0', '0','base_link','os_center_a'],
         )
     ])
