@@ -18,7 +18,7 @@ rclcpp::Publisher<pacmod3_msgs::msg::SystemCmdFloat>::SharedPtr brake_pub;
 rclcpp::Publisher<pacmod3_msgs::msg::SteeringCmd>::SharedPtr steer_pub; // TODO: ros1 was SteerSystemCmd
 
 double vehicle_speed_actual, vehicle_speed_reference, vehicle_steering_reference;
-double speed_diff, speed_diff_kmh;
+double speed_diff, speed_diff_kmh, speed_diff_prev;
 double current_time, prev_time, dt;
 std_msgs::msg::String status_string_msg;
 pacmod3_msgs::msg::SystemCmdFloat accel_command;
@@ -28,10 +28,11 @@ float p_gain_accel, i_gain_accel, d_gain_accel;
 float p_gain_brake, i_gain_brake, d_gain_brake;
 double p_out_accel, i_out_accel, d_out_accel = 0.0;
 double p_out_brake, i_out_brake, d_out_brake = 0.0;
-double const _max_i_accel = 2.0, _min_i_accel = -2.0; // anti windup constants TODO: check valid params 
+double const _max_i_accel = 1.0, _max_i_brake = 1.0; // anti windup constants TODO: check valid params 
 double t_integ_accel, t_integ_brake; // anti windup
+double t_derivative_accel, t_derivative_brake;
 bool autonom_status_changed = true;
-bool first_run = true;
+bool first_run = true, standstill = false;
 
 
 // Functions
@@ -42,7 +43,7 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   node = rclcpp::Node::make_shared("speed_control_node");
-  auto sub_current_speeed = node->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("/pacmod/parsed_tx/vehicle_speed_rpt", 10, speedCurrentCallback);
+  auto sub_current_speed = node->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("/pacmod/parsed_tx/vehicle_speed_rpt", 10, speedCurrentCallback);
   auto sub_reference_speed = node->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel", 10, speedReferenceCallback);
 
   accel_pub = node->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("/pacmod/as_rx/accel_cmd", 10);
@@ -93,22 +94,33 @@ void speedCurrentCallback(const pacmod3_msgs::msg::VehicleSpeedRpt &speed_msg)
       //RCLCPP_INFO_STREAM(node->get_logger(), "accelerate");
       p_out_accel = speed_diff * p_gain_accel * dt;
       t_integ_accel += p_out_accel * dt;
-      // Restrict to max/min Anti-Windup
+      // Restrict to max Anti-Windup
       if( t_integ_accel > _max_i_accel)
           t_integ_accel = _max_i_accel;
-      else if( t_integ_accel < _min_i_accel)
-          t_integ_accel = _min_i_accel;
-    // TODO: calculate d, eg:
-    // t_derivative_accel = (speed_diff - speed_diff_prev) / dt;
-    // d_out_accel = d_gain_accel * t_derivative_accel;
+    i_out_accel = t_integ_accel * i_gain_accel;
+    t_derivative_accel = (speed_diff - speed_diff_prev) / dt;
+    d_out_accel = d_gain_accel * t_derivative_accel;
      accel_command.command = p_out_accel + i_out_accel + d_out_accel;
      brake_command.command = 0.0;
   }
   else if(speed_diff < 0){
       //RCLCPP_INFO_STREAM(node->get_logger(), "brake");
-      brake_command.command = -1.0 * speed_diff * p_gain_brake;
-      // TODO: calculate i and d
+      p_out_brake = speed_diff * p_gain_brake * dt;
+      t_integ_brake += p_out_brake * dt;
+      // Restrict to max Anti-Windup
+      if( t_integ_brake > _max_i_brake)
+          t_integ_brake = _max_i_brake;
+      i_out_brake = t_integ_brake * i_gain_brake;
+      t_derivative_brake = (speed_diff - speed_diff_prev) / dt;
+      d_out_brake = d_gain_brake * t_derivative_brake;
+      brake_command.command = -1.0 * (p_out_brake + i_out_brake + d_out_brake);
       accel_command.command = 0.0;
+  }
+  // TODO: add standstill ?
+  if (standstill){
+      brake_command.command = 0.2;
+      accel_command.command = 0.0;
+      status_string_msg.data = "standstill";
   }
   steer_command.rotation_rate = 3.3;
   accel_command.header.frame_id = "pacmod";
@@ -147,6 +159,7 @@ void speedCurrentCallback(const pacmod3_msgs::msg::VehicleSpeedRpt &speed_msg)
     status_string_pub->publish(status_string_msg);
   status_string_msg.data = "";
   prev_time = current_time; 
+  speed_diff_prev = speed_diff;
 }
 
 void speedReferenceCallback(const geometry_msgs::msg::Twist &ref_msg){
