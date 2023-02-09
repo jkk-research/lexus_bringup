@@ -5,6 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/bool.hpp"
 #include <pacmod3_msgs/msg/vehicle_speed_rpt.hpp>
 #include <pacmod3_msgs/msg/system_cmd_float.hpp>
 #include <pacmod3_msgs/msg/system_rpt_float.hpp>
@@ -16,11 +17,14 @@ rclcpp::Publisher<std_msgs::msg::String>::SharedPtr status_string_pub;
 rclcpp::Publisher<pacmod3_msgs::msg::SystemCmdFloat>::SharedPtr accel_pub;
 rclcpp::Publisher<pacmod3_msgs::msg::SystemCmdFloat>::SharedPtr brake_pub;
 rclcpp::Publisher<pacmod3_msgs::msg::SteeringCmd>::SharedPtr steer_pub; // TODO: ros1 was SteerSystemCmd
+rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr enable_pub;
+
 
 double vehicle_speed_actual, vehicle_speed_reference, vehicle_steering_reference;
 double speed_diff, speed_diff_kmh, speed_diff_prev;
 double current_time, prev_time, dt;
 std_msgs::msg::String status_string_msg;
+std_msgs::msg::Bool enable_msg;
 pacmod3_msgs::msg::SystemCmdFloat accel_command;
 pacmod3_msgs::msg::SystemCmdFloat brake_command;
 pacmod3_msgs::msg::SteeringCmd steer_command;
@@ -49,6 +53,7 @@ int main(int argc, char * argv[])
   accel_pub = node->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("/pacmod/as_rx/accel_cmd", 10);
   brake_pub = node->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("/pacmod/as_rx/brake_cmd", 10);
   steer_pub = node->create_publisher<pacmod3_msgs::msg::SteeringCmd>("/pacmod/as_rx/steer_cmd", 10);
+  enable_pub = node->create_publisher<std_msgs::msg::Bool>("/pacmod/as_rx/enable", 10);
   status_string_pub = node->create_publisher<std_msgs::msg::String>("control_status", 10);
 
   node->declare_parameter<float>("p_gain_accel", 15.0);
@@ -65,7 +70,7 @@ int main(int argc, char * argv[])
   node->get_parameter("i_gain_brake", i_gain_brake);
   node->get_parameter("d_gain_brake", d_gain_brake);
 
-  RCLCPP_INFO(node->get_logger(), "Starting lateral control...");
+  RCLCPP_INFO(node->get_logger(), "Starting longitudinal (speed) control...");
   RCLCPP_INFO_STREAM(node->get_logger(), "Accel PID: " <<  p_gain_accel << " | " << i_gain_accel << " | " << d_gain_accel);
   RCLCPP_INFO_STREAM(node->get_logger(), "Brake PID: " <<  p_gain_brake << " | " << i_gain_brake << " | " << d_gain_brake);
 
@@ -150,11 +155,13 @@ void speedCurrentCallback(const pacmod3_msgs::msg::VehicleSpeedRpt &speed_msg)
   }
   if(first_run){
     first_run = false;
-    status_string_msg.data = "lateral_control_started";
+    status_string_msg.data = "longitudinal_control_started";
   }
+  enable_msg.data = true;
   accel_pub->publish(accel_command);
   brake_pub->publish(brake_command);
   steer_pub->publish(steer_command);
+  enable_pub->publish(enable_msg);
   if(status_string_msg.data.compare(""))
     status_string_pub->publish(status_string_msg);
   status_string_msg.data = "";

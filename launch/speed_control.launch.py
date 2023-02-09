@@ -14,7 +14,7 @@ def generate_launch_description():
             package='lexus_bringup',
             namespace='',
             executable='speed_control',
-            name='speed_control_pid_lateral',
+            name='speed_control_pid_longitudinal',
             parameters=[
                 {"p_gain_accel": 15.0},
                 {"i_gain_accel": 0.0},
