@@ -1,9 +1,10 @@
 ouster_driver:
   ros__parameters:
-    lidar_ip: 192.168.1.179        
+    lidar_ip: 192.168.1.179
+    # lidar_ip: os-122231000907.local        
     # http://os-122231000907.local/
-    computer_ip: 192.168.1.105
-    lidar_mode: "1024x10"
+    computer_ip: 192.168.1.5 #.105
+    lidar_mode: "1024x20"
     imu_port: 7503
     lidar_port: 7502
     sensor_frame: os_right_a
@@ -26,7 +27,7 @@ ouster_driver:
     # (See this project's README and/or the Ouster Software Guide for more
     # information).
     #
-    timestamp_mode: TIME_FROM_INTERNAL_OSC
+    timestamp_mode: TIME_FROM_ROS_RECEPTION
 
     # Mask-like-string used to define the data processors that should be
     # activated upon startup of the driver. This will determine the topics
