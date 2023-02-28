@@ -19,10 +19,6 @@ ros2 launch lexus_bringup zed_default_a.launch.py
 ros2 launch lexus_bringup rviz00.launch.py 
 ```
 
-## Zed 
-```
-colcon build --symlink-install --packages-select zed_interfaces zed_components zed_wrapper zed_ros2 --cmake-args=-DCMAKE_BUILD_TYPE=Release
-```
 ## Useful
 ``` bash
 dev@u22glx:~$ colcon_cd lexus_bringup
@@ -37,3 +33,39 @@ ros2 run tf2_ros static_transform_publisher --x 639770.0 --y 5195040.0 --z 0.0 -
 
 
 ![](https://raw.githubusercontent.com/jkk-research/lexus_base/main/img/lexus3d01.gif)
+
+
+## Zed install
+```
+colcon build --symlink-install --packages-select zed_interfaces zed_components zed_wrapper zed_ros2 --cmake-args=-DCMAKE_BUILD_TYPE=Release
+```
+## Duro install
+```
+cd ~/ros2_ws/src
+git clone https://github.com/szenergy/duro_gps_driver/
+cd ~/ros2_ws/src/duro_gps_driver
+git checkout ros2-humble
+cd ~/ros2_ws
+colcon build --packages-select duro_gps_driver
+```
+
+## 3D marker install
+```
+cd ~/ros2_ws/src
+git clone https://github.com/szenergy/rviz_markers
+cd ~/ros2_ws/src/rviz_markers
+git checkout ros2-humble
+cd ~/ros2_ws
+colcon build --packages-select rviz_markers
+```
+## GUI install 
+```
+cd ~/ros2_ws/src
+git clone https://github.com/jkk-research/gui_lexus
+cd ~/ros2_ws
+colcon build --packages-select gui_lexus
+```
+## CAN - PACMod3 install
+
+- [Install Pacmod3](https://github.com/astuff/pacmod3#installation)
+- [Install Kvaser](https://github.com/astuff/kvaser_interface#installation)
