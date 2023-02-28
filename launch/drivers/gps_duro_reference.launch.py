@@ -14,6 +14,7 @@ euler_based_orientation:
 - false: quaternion based, not enabled by default, please enable SPB message SBP_MSG_ORIENT_QUAT 0x0220 decimal 544
 """
 def generate_launch_description():
+    namespace = "lexus3"
     ld = LaunchDescription()
     duro_node = Node(
         package="duro_gps_driver",
@@ -21,8 +22,8 @@ def generate_launch_description():
         parameters=[
             {"ip_address": "192.168.1.10"},
             {"port": 55555},
-            {"gps_receiver_frame_id": "duro"},
-            {"imu_frame_id": "duro"},
+            {"gps_receiver_frame_id": namespace + "duro"},
+            {"imu_frame_id": namespace + "duro"},
             {"utm_frame_id": "map"},
             {"orientation_source": "gps"},
             {"z_coord_ref_switch": "zero"},

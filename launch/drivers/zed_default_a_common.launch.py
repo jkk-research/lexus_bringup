@@ -81,7 +81,7 @@ def launch_setup(context, *args, **kwargs):
     publish_map_tf = LaunchConfiguration('publish_map_tf')
     xacro_path = LaunchConfiguration('xacro_path')
 
-    camera_name_val = camera_name.perform(context)
+    camera_name_val = "lexus3/" + camera_name.perform(context)
     camera_model_val = camera_model.perform(context)
 
     if (camera_name_val == ""):
@@ -101,7 +101,7 @@ def launch_setup(context, *args, **kwargs):
     rsp_node = Node(
         condition=IfCondition(publish_urdf),
         package='robot_state_publisher',
-        namespace=camera_name_val,
+        namespace= camera_name_val,
         executable='robot_state_publisher',
         name='zed_state_publisher',
         output='screen',
@@ -185,15 +185,15 @@ def generate_launch_description():
                 description='The serial number of the camera to be opened. To be used in multi-camera rigs. Has priority with respect to `zed_id`.'),
             DeclareLaunchArgument(
                 'publish_urdf',
-                default_value='true',
+                default_value='false',
                 description='Enable URDF processing and starts Robot State Published to propagate static TF.'),
             DeclareLaunchArgument(
                 'publish_tf',
-                default_value='true',
+                default_value='false',
                 description='Enable publication of the `odom -> base_link` TF.'),
             DeclareLaunchArgument(
                 'publish_map_tf',
-                default_value='true',
+                default_value='false',
                 description='Enable publication of the `map -> odom` TF. Note: Ignored if `publish_tf` is False.'),
             DeclareLaunchArgument(
                 'xacro_path',

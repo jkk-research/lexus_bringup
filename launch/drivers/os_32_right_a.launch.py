@@ -24,6 +24,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 import os
 
 def generate_launch_description():
+    namespace = "lexus3"
     share_dir = get_package_share_directory('lexus_bringup')
     ouster_dir = get_package_share_directory('ros2_ouster')
     parameter_file = LaunchConfiguration('params_file')
@@ -39,7 +40,7 @@ def generate_launch_description():
     os_include = GroupAction(
         actions=[
 
-            SetRemap(src='/points',dst=node_id + '/points'),
+            SetRemap(src='/points', dst = namespace + "/" + node_id + '/points'),
 
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(ouster_dir + '/launch/driver_launch.py'),
