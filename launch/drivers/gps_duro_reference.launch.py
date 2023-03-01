@@ -26,8 +26,10 @@ def generate_launch_description():
             {"imu_frame_id": namespace + "duro"},
             {"utm_frame_id": "map"},
             {"orientation_source": "gps"},
-            {"z_coord_ref_switch": "zero"},
+            {"z_coord_ref_switch": "exact"},
             {"z_coord_exact_height": 1.8},
+            {"tf_frame_id": "map"},
+            {"tf_child_frame_id": "lexus3/gps"},
             {"euler_based_orientation": True}           
   
         ]

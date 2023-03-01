@@ -27,7 +27,7 @@ ouster_driver:
     # (See this project's README and/or the Ouster Software Guide for more
     # information).
     #
-    timestamp_mode: TIME_FROM_INTERNAL_OSC
+    timestamp_mode: TIME_FROM_ROS_RECEPTION
 
     # Mask-like-string used to define the data processors that should be
     # activated upon startup of the driver. This will determine the topics

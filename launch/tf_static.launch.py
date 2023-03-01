@@ -36,6 +36,13 @@ def generate_launch_description():
         ),
         Node(
             package='tf2_ros',
+            executable='static_transform_publisher',
+            name='base_gps_tf_publisher',
+            output='screen',
+            arguments=['0.0', '0.49', '-1.479','0', '0', '0', '1', namespace + '/' + 'gps', namespace + '/' + 'base_link'], # TODO
+        ),
+        Node(
+            package='tf2_ros',
             #namespace='lexus3',
             executable='static_transform_publisher',
             name='zed_camera_front_tf_publisher',
