@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Driver Args -->
+  <arg name="launch_driver" default="false" />
+  <arg name="use_socketcan" default="false" />
+  <arg name="pacmod_can_hardware_id" default="12059" />
+  <arg name="kvaser_hardware_id" default="12059" />
+  <arg name="pacmod_can_circuit_id" default="0" />
+  <arg name="pacmod_socketcan_device" default="can0" />
+  <arg name="socketcan_device" default="can0" />
+  <arg name="use_kvaser" default="true" />
+  <arg name="kvaser_circuit_id" default="0" />
+  <arg name="namespace" default="pacmod" />
+
+
+  <!-- ros2 run kvaser_interface list_channels  -->
+
+
+
+
+  <!-- PACMod Vehicle Types are:
+       POLARIS_GEM (also covers eLXD)
+       POLARIS_RANGER
+       LEXUS_RX_450H
+       INTERNATIONAL_PROSTAR_122
+       FREIGHTLINER_CASCADIA
+       JUPITER_SPIRIT -->
+  <arg name="pacmod_vehicle_type" default="LEXUS_RX_450H" />
+
+  <!-- Supported types are:
+       LOGITECH_F310 (the standard gamepad provided with all vehicles)
+       XBOX_ONE (Xbox 360 controller works the same)
+       HRI_SAFE_REMOTE
+       LOGITECH_G29 (steering wheel and pedals) -->
+  <arg name="controller_type" default="LOGITECH_F310"/>
+
+  <!-- 4.71239 is fast but jerky. Speed in rad/sec.-->
+  <arg name="steering_max_speed" default="3.3"/>
+
+  <!-- Scales accel commands, useful for decreasing sensitivity -->
+  <arg name="accel_scale_val" default="1.0"/>
+
+  <!-- Scales brake commands, useful for decreasing sensitivity -->
+  <arg name="brake_scale_val" default="1.0"/>
+
+  <!-- For GEM, 11.176m/s -->
+  <arg name="max_veh_speed" default="11.176" />
+
+  <!-- Driver 
+  <group if="$(var launch_driver)">
+    <include file="$(find-pkg-share pacmod3)/launch/pacmod3.launch.xml">
+      <arg name="use_kvaser" value="$(eval '\'$(var use_socketcan)\' == \'false\'')" />
+      <arg name="kvaser_hardware_id" value="$(var pacmod_can_hardware_id)" />
+      <arg name="kvaser_circuit_id" value="$(var pacmod_can_circuit_id)" />
+      <arg name="use_socketcan" value="$(eval '\'$(var use_socketcan)\' == \'true\'')" />
+      <arg name="socketcan_device" value="$(var pacmod_socketcan_device)" />
+    </include>
+  </group>
+  -->
+
+  <group>
+    <push-ros-namespace namespace="$(var namespace)" />
+
+    <group if="$(var use_kvaser)">
+      <include file="$(find-pkg-share kvaser_interface)/launch/kvaser_bridge.launch.xml">
+        <arg name="hardware_id" value="$(var kvaser_hardware_id)" />
+        <arg name="circuit_id" value="$(var kvaser_circuit_id)" />
+        <arg name="bit_rate" value="500000" />
+      </include>
+
+      <node pkg="pacmod3" exec="pacmod3_driver" name="pacmod" output="screen" />
+    </group>
+
+    <group if="$(var use_socketcan)">
+      <include file="$(find-pkg-share ros2_socketcan)/launch/socket_can_bridge.launch.xml">
+        <arg name="interface" value="$(var socketcan_device)" />
+      </include>
+
+      <node pkg="pacmod3" exec="pacmod3_driver" name="pacmod" output="screen">
+        <remap from="can_tx" to="from_can_bus" />
+        <remap from="can_rx" to="to_can_bus" />
+      </node>
+    </group>
+  </group>
+
+
+
+
+  <!-- Game Control -->
+  <node pkg="joy" exec="joy_node" name="joy">
+    <param name="coalesce_interval" value="0.02"/>
+    <param name="default_trig_val" value="true"/>
+    <param name="deadzone" value="0.0"/>
+  </node>
+
+  <node pkg="pacmod_game_control" exec="pacmod_game_control_exec" name="pacmod_game_control" output="screen">
+    <param name="pacmod_vehicle_type" value="$(var pacmod_vehicle_type)"/>
+    <param name="controller_type" value="$(var controller_type)"/>
+    <param name="steering_max_speed" value="$(var steering_max_speed)"/>
+    <param name="accel_scale_val" value="$(var accel_scale_val)"/>
+    <param name="brake_scale_val" value="$(var brake_scale_val)"/>
+    <param name="max_veh_speed" value="$(var max_veh_speed)" />
+  </node>
+</launch>

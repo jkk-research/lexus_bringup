@@ -6,7 +6,8 @@
   <arg name="kvaser_circuit_id" default="0" />
   <arg name="use_socketcan" default="false" />
   <arg name="socketcan_device" default="can0" />
-  <arg name="namespace" default="lexus3/pacmod" />
+  <arg name="namespace" default="pacmod" />
+  <!-- namespace TODO -->
 
   <group>
     <push-ros-namespace namespace="$(var namespace)" />

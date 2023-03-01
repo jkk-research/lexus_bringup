@@ -45,15 +45,36 @@ void speedReferenceCallback(const geometry_msgs::msg::Twist &ref_msg);
 
 int main(int argc, char * argv[])
 {
+
+/*
+ Subscribers:
+    /pacmod/enabled: std_msgs/msg/Bool
+    /pacmod/hazard_lights_rpt: pacmod3_msgs/msg/SystemRptBool
+    /pacmod/headlight_rpt: pacmod3_msgs/msg/SystemRptInt
+    /pacmod/horn_rpt: pacmod3_msgs/msg/SystemRptBool
+    /pacmod/vehicle_speed_rpt: pacmod3_msgs/msg/VehicleSpeedRpt
+    /pacmod/wiper_rpt: pacmod3_msgs/msg/SystemRptInt
+  Publishers:
+    /pacmod/accel_cmd: pacmod3_msgs/msg/SystemCmdFloat
+    /pacmod/brake_cmd: pacmod3_msgs/msg/SystemCmdFloat
+    /pacmod/hazard_lights_cmd: pacmod3_msgs/msg/SystemCmdBool
+    /pacmod/headlight_cmd: pacmod3_msgs/msg/SystemCmdInt
+    /pacmod/horn_cmd: pacmod3_msgs/msg/SystemCmdBool
+    /pacmod/shift_cmd: pacmod3_msgs/msg/SystemCmdInt
+    /pacmod/steering_cmd: pacmod3_msgs/msg/SteeringCmd
+    /pacmod/turn_cmd: pacmod3_msgs/msg/SystemCmdInt
+    /pacmod/wiper_cmd: pacmod3_msgs/msg/SystemCmdInt
+*/
+
   rclcpp::init(argc, argv);
   node = rclcpp::Node::make_shared("speed_control_node");
-  auto sub_current_speed = node->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("/pacmod/parsed_tx/vehicle_speed_rpt", 10, speedCurrentCallback);
+  auto sub_current_speed = node->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("/pacmod/vehicle_speed_rpt", 10, speedCurrentCallback);
   auto sub_reference_speed = node->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel", 10, speedReferenceCallback);
 
-  accel_pub = node->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("/pacmod/as_rx/accel_cmd", 10);
-  brake_pub = node->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("/pacmod/as_rx/brake_cmd", 10);
-  steer_pub = node->create_publisher<pacmod3_msgs::msg::SteeringCmd>("/pacmod/as_rx/steer_cmd", 10);
-  enable_pub = node->create_publisher<std_msgs::msg::Bool>("/pacmod/as_rx/enable", 10);
+  accel_pub = node->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("/pacmod/accel_cmd", 10);
+  brake_pub = node->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("/pacmod/brake_cmd", 10);
+  steer_pub = node->create_publisher<pacmod3_msgs::msg::SteeringCmd>("/pacmod/steering_cmd", 10);
+  enable_pub = node->create_publisher<std_msgs::msg::Bool>("/pacmod/enable", 10);
   status_string_pub = node->create_publisher<std_msgs::msg::String>("control_status", 10);
 
   node->declare_parameter<float>("p_gain_accel", 15.0);
