@@ -166,7 +166,7 @@ void speedCurrentCallback(const pacmod3_msgs::msg::VehicleSpeedRpt &speed_msg)
           brake_command_raw = _max_i_brake;
       }
       brake_command.command = -1.0 * brake_command_raw;
-      brake_command.command = 0.0;
+      accel_command.command = 0.0;
       // gradient limit
       if((brake_command.command - brake_command_prev) / dt > 0.8 && dt > 0.0){
           brake_command.command = brake_command_prev + 0.8 * dt;
