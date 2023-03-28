@@ -21,6 +21,8 @@ echo "[INFO] Starting rviz00.launch.py"
 screen -dmS rviz00.launch.py bash -c 'ros2 launch lexus_bringup rviz00.launch.py'
 echo "[INFO] Starting can_pacmod3.launch.xml"
 screen -dmS can_pacmod3 bash -c 'ros2 launch lexus_bringup can_pacmod3.launch.xml'
+echo "[INFO] Starting path, steering and km/h publisher"
+screen -dmS path_steering_and_kmph bash -c 'ros2 run lexus_bringup path_steering_and_kmph'
 #echo "[INFO] Starting foxglove"
 #foxglove-studio "foxglove://open?ds=rosbridge-websocket&ds.url=ws://localhost:8765"
 

@@ -14,6 +14,8 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(pacmod3_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -24,10 +26,15 @@ set(ament_dependencies
   std_msgs
   pacmod3_msgs
   geometry_msgs
+  nav_msgs
+  visualization_msgs
 )
 
 add_executable(speed_control src/speed_control.cpp)
-ament_target_dependencies(speed_control rclcpp std_msgs pacmod3_msgs geometry_msgs) 
+ament_target_dependencies(speed_control ${ament_dependencies}) 
+add_executable(path_steering_and_kmph src/path_steering_and_kmph.cpp)
+ament_target_dependencies(path_steering_and_kmph ${ament_dependencies}) 
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -45,5 +52,6 @@ install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME})
 install(TARGETS
   speed_control
+  path_steering_and_kmph
   DESTINATION lib/${PROJECT_NAME})
 ament_package()
