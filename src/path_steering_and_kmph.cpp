@@ -26,6 +26,7 @@ rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub;
 rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr speed_kmph_pub;
 nav_msgs::msg::Path path;
 geometry_msgs::msg::PoseStamped actual_pose;
+std::string current_map = "empty";
 int location = 0;
 
 namespace locations // add when new locations appear
@@ -79,6 +80,7 @@ void vehicleSteeringCallback(const pacmod3_msgs::msg::SystemRptFloat &steer_msg)
 // Callback for pose messages
 void vehiclePoseCallback(const geometry_msgs::msg::PoseStamped &pos_msg){
     actual_pose = pos_msg;
+    RCLCPP_INFO_STREAM(node->get_logger(), "New pos ");
 }
 // Callback for vehicle speed messages
 void vehicleSpeedCallback(const pacmod3_msgs::msg::VehicleSpeedRpt &speed_msg){
@@ -92,7 +94,7 @@ void loop(){
     if (publish_steer_marker)
     {
         visualization_msgs::msg::Marker steer_marker;
-        steer_marker.header.frame_id = "base_link";
+        steer_marker.header.frame_id = "lexus3/base_link";
         steer_marker.header.stamp = node->now();
         steer_marker.ns = "steering_path";
         steer_marker.id = 0;
@@ -132,7 +134,7 @@ void loop(){
         steer_marker.points.clear();
     }
     geometry_msgs::msg::PoseStamped pose;
-    std::string current_map = "empty";
+
     pose.header.stamp = node->now();
     if ((actual_pose.pose.position.x > 0.001 || actual_pose.pose.position.x < -0.001) && !std::isnan(actual_pose.pose.position.y) && !std::isinf(actual_pose.pose.position.y)){
         if (first_run){
@@ -179,7 +181,7 @@ int main(int argc, char **argv)
     std::string pose_topic, marker_topic, path_topic;
     node = rclcpp::Node::make_shared("path_steering_kmph");
 
-    node->declare_parameter<std::string>("pose_topic", "lexus3/current_pose");
+    node->declare_parameter<std::string>("pose_topic", "/current_pose");
     node->declare_parameter<std::string>("marker_topic", "marker_steering");
     node->declare_parameter<std::string>("path_topic", "marker_path");
     node->declare_parameter<std::string>("marker_color", "y");
@@ -193,7 +195,7 @@ int main(int argc, char **argv)
     node->get_parameter("publish_steer_marker", publish_steer_marker);
     node->get_parameter("path_size", path_size);
 
-    auto sub_steer = node->create_subscription<pacmod3_msgs::msg::SystemRptFloat>("lexus3/pacmod/steer_rpt", 1, vehicleSteeringCallback);
+    auto sub_steer = node->create_subscription<pacmod3_msgs::msg::SystemRptFloat>("lexus3/pacmod/steering_rpt", 1, vehicleSteeringCallback);
     auto sub_speed = node->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("lexus3/pacmod/vehicle_speed_rpt", 1, vehicleSpeedCallback);
     auto sub_current_pose = node->create_subscription<geometry_msgs::msg::PoseStamped>(pose_topic, 1, vehiclePoseCallback);
     marker_pub = node->create_publisher<visualization_msgs::msg::Marker>(marker_topic, 1);
