@@ -11,6 +11,13 @@
 #include <pacmod3_msgs/msg/vehicle_speed_rpt.hpp>
 
 #include "std_msgs/msg/float32.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2/LinearMath/Matrix3x3.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "tf2/convert.h"
+
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
@@ -35,7 +42,7 @@ public:
         this->declare_parameter<std::string>("path_topic", "marker_path");
         this->declare_parameter<std::string>("marker_color", "y");
         this->declare_parameter<bool>("publish_steer_marker", true);
-        this->declare_parameter<int>("path_size", 500);
+        this->declare_parameter<int>("path_size", 1500);
 
         this->get_parameter("pose_topic", pose_topic);
         this->get_parameter("marker_topic", marker_topic);
@@ -44,9 +51,12 @@ public:
         this->get_parameter("publish_steer_marker", publish_steer_marker);
         this->get_parameter("path_size", path_size);
 
+        tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+        tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+
         sub_steer_ = this->create_subscription<pacmod3_msgs::msg::SystemRptFloat>("lexus3/pacmod/steering_rpt", 10, std::bind(&PathSteerAndKmph::vehicleSteeringCallback, this, _1));
         sub_speed_ = this->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("lexus3/pacmod/vehicle_speed_rpt", 10, std::bind(&PathSteerAndKmph::vehicleSpeedCallback, this, _1));
-        sub_current_pose_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(pose_topic, 10, std::bind(&PathSteerAndKmph::vehiclePoseCallback, this, _1));
+        //sub_current_pose_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(pose_topic, 10, std::bind(&PathSteerAndKmph::vehiclePoseCallback, this, _1));
         marker_pub = this->create_publisher<visualization_msgs::msg::Marker>(marker_topic, 1);
         path_pub = this->create_publisher<nav_msgs::msg::Path>(path_topic, 1);
         speed_kmph_pub = this->create_publisher<std_msgs::msg::Float32>("lexus3/vehicle_speed_kmph", 1);
@@ -84,11 +94,12 @@ private:
         // between  0.0 and 10.1 m/s 0.182 ratio
         // between 10.1 and 10.1 m/s 0.182-0.120 slope ratio
         // between 19.3 and max  m/s 0.120 ratio
-
-        if (vehicle_speed_mps < 10.1)
-        {
-            steering_angle = steer_msg.output * 0.182;
-        }
+        //TODO:
+        //if (vehicle_speed_mps < 10.1)
+        //{
+            steering_angle = steer_msg.output / 14.8;
+        //}
+        /*
         else if (vehicle_speed_mps < 19.3)
         {
             // slope which is 0.182 at 10.1 and 0.120 at 19.3
@@ -99,6 +110,7 @@ private:
         {
             steering_angle = steer_msg.output * 0.120;
         }
+        */
         steering_enabled = steer_msg.enabled;
     }
 
@@ -117,8 +129,36 @@ private:
         speed_kmph_pub->publish(speed_kmph);
     }
 
+    // get tf2 transform from map to lexus3/base_link
+    void vehiclePoseFromTransform()
+    {
+        geometry_msgs::msg::TransformStamped transformStamped;
+        try
+        {
+            transformStamped = tf_buffer_->lookupTransform("map", "lexus3/base_link", tf2::TimePointZero);
+        }
+
+        catch (const tf2::TransformException &ex)
+        {
+            // RCLCPP_WARN(this->get_logger(), "Could not get transform: %s", ex.what());
+            return;
+        }
+        actual_pose.pose.position.x = transformStamped.transform.translation.x;
+        actual_pose.pose.position.y = transformStamped.transform.translation.y;
+        actual_pose.pose.position.z = transformStamped.transform.translation.z;
+        actual_pose.pose.orientation.x = transformStamped.transform.rotation.x;
+        actual_pose.pose.orientation.y = transformStamped.transform.rotation.y;
+        actual_pose.pose.orientation.z = transformStamped.transform.rotation.z;
+        actual_pose.pose.orientation.w = transformStamped.transform.rotation.w;
+        actual_pose.header.stamp = this->now();
+        actual_pose.header.frame_id = "map";
+        //RCLCPP_INFO_STREAM(this->get_logger(), "actual_pose: " << actual_pose.pose.position.x << ", " << actual_pose.pose.position.y << ", " << actual_pose.pose.position.z);
+    }
+
+
     void loop()
     {
+        vehiclePoseFromTransform();
         if (publish_steer_marker)
         {
             visualization_msgs::msg::Marker steer_marker;
@@ -157,7 +197,7 @@ private:
             steer_marker.color.a = 1.0;
             steer_marker.lifetime = rclcpp::Duration::from_seconds(0);
             double marker_pos_x = 0.0, marker_pos_y = 0.0, theta = 0.0;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 200; i++)
             {
                 marker_pos_x += 0.01 * 10 * cos(theta);
                 marker_pos_y += 0.01 * 10 * sin(theta);
@@ -197,6 +237,7 @@ private:
                 current_map = "map_zala_0";
                 break;
             }
+            pose.pose.position.z = actual_pose.pose.position.z;
             pose.header.frame_id = current_map;
             path.header.frame_id = current_map;
             pose.pose.orientation = actual_pose.pose.orientation;
@@ -231,6 +272,8 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr speed_kmph_pub;
     nav_msgs::msg::Path path;
     geometry_msgs::msg::PoseStamped actual_pose;
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
     std::string current_map = "empty";
     int location = 0;
 };
