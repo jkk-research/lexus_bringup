@@ -38,6 +38,7 @@ public:
     this->get_parameter("lx_namespace", lx_namespace);
     sub_current_speed = this->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>(lx_namespace + "/pacmod/vehicle_speed_rpt", 10, std::bind(&SpeedControl::speedCurrentCallback, this, _1));
     sub_reference_speed = this->create_subscription<geometry_msgs::msg::Twist>(lx_namespace + "/cmd_vel", 10, std::bind(&SpeedControl::speedReferenceCallback, this, _1));
+    sub_autonom_reinint = this->create_subscription<std_msgs::msg::Bool>(lx_namespace + "/control_reinit", 10, std::bind(&SpeedControl::autonomReinitCallback, this, _1));
 
     accel_pub = this->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>(lx_namespace + "/pacmod/accel_cmd", 10);
     brake_pub = this->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>(lx_namespace + "/pacmod/brake_cmd", 10);
@@ -169,6 +170,14 @@ private:
     vehicle_steering_reference = ref_msg.angular.z;
   }
 
+  void autonomReinitCallback(const std_msgs::msg::Bool &autonom_status_msg)
+  {
+    // ros2 topic pub --once /lexus3/control_reinit std_msgs/msg/Bool "{data: true}"
+    autonom_status_changed = autonom_status_msg.data;
+    std::string a_status = autonom_status_msg.data ? "true" : "false";
+    RCLCPP_INFO_STREAM(this->get_logger(), lx_namespace << "/control_reinit: " << a_status);
+  }
+
   double vehicle_speed_actual, vehicle_speed_reference, vehicle_steering_reference;
   double speed_diff, speed_diff_prev;
   double current_time, prev_time, dt;
@@ -193,6 +202,7 @@ private:
   // Subscribers
   rclcpp::Subscription<pacmod3_msgs::msg::VehicleSpeedRpt>::SharedPtr sub_current_speed;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_reference_speed;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_autonom_reinint;
   // Publishers
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr status_string_pub;
   rclcpp::Publisher<pacmod3_msgs::msg::SystemCmdFloat>::SharedPtr accel_pub;
