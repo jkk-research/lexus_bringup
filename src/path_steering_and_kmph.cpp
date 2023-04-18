@@ -176,18 +176,43 @@ private:
             steer_marker.pose.orientation.z = 0.0;
             steer_marker.pose.orientation.w = 1.0;
             steer_marker.scale.x = 0.6;
-            if (marker_color == "r")
+            // https://github.com/jkk-research/colors
+            if (marker_color == "r") // red
             {
                 steer_marker.color.r = 0.96f;
                 steer_marker.color.g = 0.22f;
                 steer_marker.color.b = 0.06f;
             }
-            else if (marker_color == "b")
+            else if (marker_color == "g") // green
+            {
+                steer_marker.color.r = 0.30f;
+                steer_marker.color.g = 0.69f;
+                steer_marker.color.b = 0.31f;
+            }
+            else if (marker_color == "b") // blue
             {
                 steer_marker.color.r = 0.02f;
                 steer_marker.color.g = 0.50f;
                 steer_marker.color.b = 0.70f;
             }
+            else if (marker_color == "k") // black
+            {
+                steer_marker.color.r = 0.19f;
+                steer_marker.color.g = 0.19f;
+                steer_marker.color.b = 0.23f;
+            }
+            else if (marker_color == "w") // white
+            {
+                steer_marker.color.r = 0.89f;
+                steer_marker.color.g = 0.89f;
+                steer_marker.color.b = 0.93f;
+            }    
+            else if (marker_color == "p") // pink
+            {
+                steer_marker.color.r = 0.91f;
+                steer_marker.color.g = 0.12f;
+                steer_marker.color.b = 0.39f;
+            }                     
             else
             { // yellow
                 steer_marker.color.r = 0.94f;
