@@ -57,13 +57,13 @@ private:
     current_time = (this->now()).seconds();
     vehicle_speed_actual = speed_msg.vehicle_speed;
     steer_command.command = vehicle_steering_reference;
-    RCLCPP_INFO_STREAM(this->get_logger(), "speed: " << speed_msg.vehicle_speed);
+    //RCLCPP_INFO_STREAM(this->get_logger(), "speed: " << speed_msg.vehicle_speed);
     speed_diff = vehicle_speed_reference - vehicle_speed_actual;
     // RCLCPP_INFO_STREAM(this->get_logger(), " diff km/h: " << speed_diff * 3.6);
     //  here a hysteresis is applied to avoid fluctuating behaviour at constant speed
-    //  the bandwith of the hysteresis: e.g. 0.15 m/s (0.54 km/h)
+    //  the bandwith of the hysteresis: e.g. 0.9 m/s (3.24 km/h)
     //  in this if statement control_state is in acceleration
-    if ((speed_diff > -0.15 && control_state) || (speed_diff > 0.15))
+    if ((speed_diff > -0.9 && control_state) || (speed_diff > 0.9))
     {
       control_state = true;
       // RCLCPP_INFO_STREAM(this->get_logger(), "accelerate");
@@ -92,7 +92,7 @@ private:
     }
     // hysteresis to avoid fluctuating behaviour at constant speeds
     // in this if statement control_state is in deceleration (brake)
-    else if ((speed_diff < 0.15 && !control_state) || (speed_diff < -0.15))
+    else if ((speed_diff < 0.9 && !control_state) || (speed_diff < -0.9))
     {
       control_state = false; // brake state
       // RCLCPP_INFO_STREAM(this->get_logger(), "brake");
