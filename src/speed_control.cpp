@@ -66,6 +66,7 @@ private:
     if ((speed_diff > -0.9 && control_state) || (speed_diff > 0.9))
     {
       control_state = true;
+      status_string_msg.data = "accel"; 
       // RCLCPP_INFO_STREAM(this->get_logger(), "accelerate");
       p_out_accel = speed_diff * p_gain_accel;
       t_integ_accel += speed_diff * dt;
@@ -95,10 +96,15 @@ private:
     else if ((speed_diff < 0.9 && !control_state) || (speed_diff < -0.9))
     {
       control_state = false; // brake state
+      status_string_msg.data = "brake"; 
       // RCLCPP_INFO_STREAM(this->get_logger(), "brake");
       p_out_brake = speed_diff * p_gain_brake;
+      // Standstill 1.38 m/s ~= 5.0 km/h
+      if (vehicle_speed_reference < 1.38 && vehicle_speed_actual < 1.38){
+        status_string_msg.data = "standstill5";  
+        p_out_brake = p_out_brake * 1.2;
+      }      
       t_integ_brake += speed_diff * dt;
-
       i_out_brake = t_integ_brake * i_gain_brake;
       t_derivative_brake = (speed_diff - speed_diff_prev) / dt;
       d_out_brake = d_gain_brake * t_derivative_brake;
@@ -115,6 +121,12 @@ private:
       {
         brake_command.command = brake_command_prev + 0.8 * dt;
       }
+      // Standstill 0.27 m/s ~= 1.0 km/h
+      if (vehicle_speed_reference < 0.01 && vehicle_speed_actual < 0.27){
+        status_string_msg.data = "standstill1";  
+        brake_command.command = 0.3;
+      }
+
     }
     steer_command.rotation_rate = 3.3;
     accel_command.header.frame_id = "pacmod";
@@ -154,7 +166,7 @@ private:
     brake_pub->publish(brake_command);
     steer_pub->publish(steer_command);
     enable_pub->publish(enable_msg);
-    status_string_msg.data = control_state ? "accel" : "brake";
+    //status_string_msg.data = control_state ? "accel" : "brake";
     if (status_string_msg.data.compare(""))
       status_string_pub->publish(status_string_msg);
     status_string_msg.data = "";
