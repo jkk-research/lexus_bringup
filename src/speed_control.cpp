@@ -179,7 +179,7 @@ private:
   void speedReferenceCallback(const geometry_msgs::msg::Twist &ref_msg)
   {
     vehicle_speed_reference = ref_msg.linear.x;
-    vehicle_steering_reference = ref_msg.angular.z;
+    vehicle_steering_reference = ref_msg.angular.z * 14.8; // geometry_msgs/Twist.angular.z is the steering in radians/second, pacmod3_msgs/SteeringCmd the steering wheel angle 
   }
 
   void autonomReinitCallback(const std_msgs::msg::Bool &autonom_status_msg)
