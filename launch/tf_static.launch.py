@@ -39,7 +39,8 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='base_gps_tf_publisher',
             output='screen',
-            arguments=['0.0', '0.49', '-1.479','0', '0', '0', '1', namespace + '/' + 'gps', namespace + '/' + 'base_link'], # TODO
+            # https://raw.githubusercontent.com/wiki/szenergy/szenergy-public-resources/img/2022.L.01.svg
+            arguments=['-1.542', '-0.49', '-1.479','0', '0', '0', '1', namespace + '/' + 'gps', namespace + '/' + 'base_link'], # TODO
         ),
         Node(
             package='tf2_ros',
