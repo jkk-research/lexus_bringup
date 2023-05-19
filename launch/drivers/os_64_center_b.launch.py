@@ -40,35 +40,36 @@ def generate_launch_description():
     ouster_ns_arg = DeclareLaunchArgument('ouster_ns', default_value='ouster')
 
 
-    os_sensor = LifecycleNode(
+    os_sensor_center = LifecycleNode(
         package='ouster_ros',
         executable='os_sensor',
-        name='os_sensor',
+        name='os_sensor_center',
         namespace=ouster_ns,
         parameters=[params_file],
-        # remappings=[
-        #     ('/ouster/metadata', "/" + node_id + '/metadata'),   
-        #     ('/ouster/imu_packets', "/" + node_id + '/imu_packets'),
-        #     ('/ouster/lidar_packets', "/" + node_id + '/lidar_packets'),
-        # ],   
+        remappings=[
+            ('/ouster/metadata', "/" + node_id + '/metadata'),   
+            ('/ouster/imu_packets', "/" + node_id + '/imu_packets'),
+            ('/ouster/lidar_packets', "/" + node_id + '/lidar_packets'),
+            #('/ouster/os_sensor/transition_event', "/" + node_id + '/transition_event'),
+        ],   
 
         output='screen',
     )
 
     sensor_configure_event = EmitEvent(
         event=ChangeState(
-            lifecycle_node_matcher=matches_action(os_sensor),
+            lifecycle_node_matcher=matches_action(os_sensor_center),
             transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
         )
     )
 
     sensor_activate_event = RegisterEventHandler(
         OnStateTransition(
-            target_lifecycle_node=os_sensor, goal_state='inactive',
+            target_lifecycle_node=os_sensor_center, goal_state='inactive',
             entities=[
                 LogInfo(msg="os_sensor activating..."),
                 EmitEvent(event=ChangeState(
-                    lifecycle_node_matcher=matches_action(os_sensor),
+                    lifecycle_node_matcher=matches_action(os_sensor_center),
                     transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
                 )),
             ],
@@ -99,6 +100,10 @@ def generate_launch_description():
         remappings=[
             ('/ouster/points', namespace_lexus + "/" + node_id + '/points'),   
             ('/ouster/imu', namespace_lexus + "/" + node_id + '/imu'),
+            ('/ouster/metadata', "/" + node_id + '/metadata'),   
+            ('/ouster/imu_packets', "/" + node_id + '/imu_packets'),
+            ('/ouster/lidar_packets', "/" + node_id + '/lidar_packets'),
+            #('/ouster/os_sensor/transition_event', "/" + node_id + '/transition_event'),
         ],   
         output='screen',
     )
@@ -121,7 +126,7 @@ def generate_launch_description():
     return launch.LaunchDescription([
         params_file_arg,
         ouster_ns_arg,
-        os_sensor,
+        os_sensor_center,
         os_cloud,
         # os_image,
         sensor_configure_event,
