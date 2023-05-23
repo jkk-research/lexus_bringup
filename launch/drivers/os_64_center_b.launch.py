@@ -25,11 +25,9 @@ def generate_launch_description():
     Generate launch description for running ouster_ros components separately each
     component will run in a separate process).
     """
-    namespace_lexus = "/lexus3"
-    node_id = 'os_center'
     lexus_ros_pkg_dir = get_package_share_directory('lexus_bringup')
     default_params_file = \
-        Path(lexus_ros_pkg_dir) / 'launch' / 'drivers' / 'os_64_center_b.yaml'
+        Path(lexus_ros_pkg_dir) / 'launch' / 'drivers' / 'ouster_config.yaml'
     params_file = LaunchConfiguration('params_file')
     params_file_arg = DeclareLaunchArgument('params_file',
                                             default_value=str(
@@ -37,45 +35,40 @@ def generate_launch_description():
                                             description='name or path to the parameters file to use.')
 
     ouster_ns = LaunchConfiguration('ouster_ns')
-    ouster_ns_arg = DeclareLaunchArgument('ouster_ns', default_value='ouster')
+    ouster_ns_arg = DeclareLaunchArgument('ouster_ns', default_value='lexus3/os_center')
 
 
-    os_sensor_center = LifecycleNode(
+    os_sensor = LifecycleNode(
         package='ouster_ros',
         executable='os_sensor',
-        name='os_sensor_center',
+        name='os_sensor',
         namespace=ouster_ns,
         parameters=[params_file],
-        remappings=[
-            ('/ouster/metadata', "/" + node_id + '/metadata'),   
-            ('/ouster/imu_packets', "/" + node_id + '/imu_packets'),
-            ('/ouster/lidar_packets', "/" + node_id + '/lidar_packets'),
-            #('/ouster/os_sensor/transition_event', "/" + node_id + '/transition_event'),
-        ],   
-
         output='screen',
     )
 
     sensor_configure_event = EmitEvent(
         event=ChangeState(
-            lifecycle_node_matcher=matches_action(os_sensor_center),
+            lifecycle_node_matcher=matches_action(os_sensor),
             transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
         )
     )
 
     sensor_activate_event = RegisterEventHandler(
         OnStateTransition(
-            target_lifecycle_node=os_sensor_center, goal_state='inactive',
+            target_lifecycle_node=os_sensor, goal_state='inactive',
             entities=[
-                LogInfo(msg="os_sensor activating..."),
+                LogInfo(msg="os_sensor activating... lexus3/os_center"),
                 EmitEvent(event=ChangeState(
-                    lifecycle_node_matcher=matches_action(os_sensor_center),
+                    lifecycle_node_matcher=matches_action(os_sensor),
                     transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
                 )),
             ],
             handle_once=True
         )
     )
+
+    
 
     # TODO: figure out why registering for on_shutdown event causes an exception
     # and error handling
@@ -97,14 +90,6 @@ def generate_launch_description():
         name='os_cloud',
         namespace=ouster_ns,
         parameters=[params_file],
-        remappings=[
-            ('/ouster/points', namespace_lexus + "/" + node_id + '/points'),   
-            ('/ouster/imu', namespace_lexus + "/" + node_id + '/imu'),
-            ('/ouster/metadata', "/" + node_id + '/metadata'),   
-            ('/ouster/imu_packets', "/" + node_id + '/imu_packets'),
-            ('/ouster/lidar_packets', "/" + node_id + '/lidar_packets'),
-            #('/ouster/os_sensor/transition_event', "/" + node_id + '/transition_event'),
-        ],   
         output='screen',
     )
 
@@ -114,19 +99,13 @@ def generate_launch_description():
     #     name='os_image',
     #     namespace=ouster_ns,
     #     parameters=[params_file],
-    #     remappings=[
-    #         ('/ouster/range_image',  node_id  + '/range_image'),
-    #         ('/ouster/nearir_image',  node_id  + '/nearir_image'),
-    #         ('/ouster/reflec_image',  node_id  + '/reflec_image'),
-    #         ('/ouster/signal_image',  node_id  + '/signal_image'),
-    #     ],
     #     output='screen',
     # )
     
     return launch.LaunchDescription([
         params_file_arg,
         ouster_ns_arg,
-        os_sensor_center,
+        os_sensor,
         os_cloud,
         # os_image,
         sensor_configure_event,
