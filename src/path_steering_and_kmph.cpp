@@ -18,7 +18,6 @@
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2/convert.h"
 
-
 using namespace std::chrono_literals;
 using std::placeholders::_1;
 
@@ -36,30 +35,39 @@ class PathSteerAndKmph : public rclcpp::Node
 {
 public:
     PathSteerAndKmph() : Node("path_steering_kmph_node")
-    {      
+    {
         this->declare_parameter<std::string>("pose_topic", "lexus3/current_pose");
+        this->declare_parameter<std::string>("pose_frame", "lexus3/base_link");
         this->declare_parameter<std::string>("marker_topic", "marker_steering");
         this->declare_parameter<std::string>("path_topic", "marker_path");
         this->declare_parameter<std::string>("marker_color", "y");
         this->declare_parameter<bool>("publish_steer_marker", true);
+        this->declare_parameter<bool>("publish_kmph", true);
         this->declare_parameter<int>("path_size", 1500);
 
         this->get_parameter("pose_topic", pose_topic);
+        this->get_parameter("pose_frame", pose_frame);
         this->get_parameter("marker_topic", marker_topic);
         this->get_parameter("path_topic", path_topic);
         this->get_parameter("marker_color", marker_color);
         this->get_parameter("publish_steer_marker", publish_steer_marker);
         this->get_parameter("path_size", path_size);
+        this->get_parameter("publish_kmph", publish_kmph);
 
         tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
         tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
-
-        sub_steer_ = this->create_subscription<pacmod3_msgs::msg::SystemRptFloat>("lexus3/pacmod/steering_rpt", 10, std::bind(&PathSteerAndKmph::vehicleSteeringCallback, this, _1));
-        sub_speed_ = this->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("lexus3/pacmod/vehicle_speed_rpt", 10, std::bind(&PathSteerAndKmph::vehicleSpeedCallback, this, _1));
-        //sub_current_pose_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(pose_topic, 10, std::bind(&PathSteerAndKmph::vehiclePoseCallback, this, _1));
+        if (publish_kmph)
+        {
+            sub_steer_ = this->create_subscription<pacmod3_msgs::msg::SystemRptFloat>("lexus3/pacmod/steering_rpt", 10, std::bind(&PathSteerAndKmph::vehicleSteeringCallback, this, _1));
+            sub_speed_ = this->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("lexus3/pacmod/vehicle_speed_rpt", 10, std::bind(&PathSteerAndKmph::vehicleSpeedCallback, this, _1));
+        }
+        // sub_current_pose_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(pose_topic, 10, std::bind(&PathSteerAndKmph::vehiclePoseCallback, this, _1));
         marker_pub = this->create_publisher<visualization_msgs::msg::Marker>(marker_topic, 1);
         path_pub = this->create_publisher<nav_msgs::msg::Path>(path_topic, 1);
-        speed_kmph_pub = this->create_publisher<std_msgs::msg::Float32>("lexus3/vehicle_speed_kmph", 1);
+        if (publish_kmph)
+        {
+            speed_kmph_pub = this->create_publisher<std_msgs::msg::Float32>("lexus3/vehicle_speed_kmph", 1);
+        }
         // Call loop function 20 Hz (50 milliseconds)
         timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&PathSteerAndKmph::loop, this));
         RCLCPP_INFO_STREAM(this->get_logger(), "Node started: " << this->get_name() << " subscribed: " << pose_topic << " publishing: " << marker_topic << " " << path_topic);
@@ -94,10 +102,10 @@ private:
         // between  0.0 and 10.1 m/s 0.182 ratio
         // between 10.1 and 10.1 m/s 0.182-0.120 slope ratio
         // between 19.3 and max  m/s 0.120 ratio
-        //TODO:
-        //if (vehicle_speed_mps < 10.1)
+        // TODO:
+        // if (vehicle_speed_mps < 10.1)
         //{
-            steering_angle = steer_msg.output / 14.8;
+        steering_angle = steer_msg.output / 14.8;
         //}
         /*
         else if (vehicle_speed_mps < 19.3)
@@ -118,7 +126,7 @@ private:
     void vehiclePoseCallback(const geometry_msgs::msg::PoseStamped &pos_msg)
     {
         actual_pose = pos_msg;
-        //RCLCPP_INFO_STREAM(this->get_logger(), "New pos ");
+        // RCLCPP_INFO_STREAM(this->get_logger(), "New pos ");
     }
     // Callback for vehicle speed messages
     void vehicleSpeedCallback(const pacmod3_msgs::msg::VehicleSpeedRpt &speed_msg)
@@ -135,7 +143,7 @@ private:
         geometry_msgs::msg::TransformStamped transformStamped;
         try
         {
-            transformStamped = tf_buffer_->lookupTransform("map", "lexus3/base_link", tf2::TimePointZero);
+            transformStamped = tf_buffer_->lookupTransform("map", pose_frame, tf2::TimePointZero);
         }
 
         catch (const tf2::TransformException &ex)
@@ -152,9 +160,8 @@ private:
         actual_pose.pose.orientation.w = transformStamped.transform.rotation.w;
         actual_pose.header.stamp = this->now();
         actual_pose.header.frame_id = "map";
-        //RCLCPP_INFO_STREAM(this->get_logger(), "actual_pose: " << actual_pose.pose.position.x << ", " << actual_pose.pose.position.y << ", " << actual_pose.pose.position.z);
+        // RCLCPP_INFO_STREAM(this->get_logger(), "actual_pose: " << actual_pose.pose.position.x << ", " << actual_pose.pose.position.y << ", " << actual_pose.pose.position.z);
     }
-
 
     void loop()
     {
@@ -206,13 +213,13 @@ private:
                 steer_marker.color.r = 0.89f;
                 steer_marker.color.g = 0.89f;
                 steer_marker.color.b = 0.93f;
-            }    
+            }
             else if (marker_color == "p") // pink
             {
                 steer_marker.color.r = 0.91f;
                 steer_marker.color.g = 0.12f;
                 steer_marker.color.b = 0.39f;
-            }                     
+            }
             else
             { // yellow
                 steer_marker.color.r = 0.94f;
@@ -283,12 +290,12 @@ private:
     rclcpp::Subscription<pacmod3_msgs::msg::SystemRptFloat>::SharedPtr sub_steer_;
     rclcpp::Subscription<pacmod3_msgs::msg::VehicleSpeedRpt>::SharedPtr sub_speed_;
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_current_pose_;
-    std::string pose_topic, marker_topic, path_topic;
+    std::string pose_topic, marker_topic, path_topic, pose_frame;
     const double wheelbase = 2.789;
     double steering_angle, vehicle_speed_mps;
     long unsigned int path_size;
     bool steering_enabled;
-    bool first_run = true, publish_steer_marker;
+    bool first_run = true, publish_steer_marker, publish_kmph;
     const double map_gyor_0_x = 697237.0, map_gyor_0_y = 5285644.0;
     const double map_zala_0_x = 639770.0, map_zala_0_y = 5195040.0;
     std::string marker_color;

@@ -30,6 +30,7 @@ def generate_launch_description():
             {"z_coord_ref_switch": "exact"},
             {"z_coord_exact_height": 1.8},
             {"tf_frame_id": "map"},
+            {"zero_based_pose": False},
             {"tf_child_frame_id": "lexus3/gps"},
             {"euler_based_orientation": True}           
         ],

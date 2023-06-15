@@ -45,6 +45,9 @@ add_executable(path_steering_and_kmph src/path_steering_and_kmph.cpp)
 ament_target_dependencies(path_steering_and_kmph ${ament_dependencies}) 
 add_executable(current_pose_from_tf src/current_pose_from_tf.cpp)
 ament_target_dependencies(current_pose_from_tf ${ament_dependencies}) 
+add_executable(odom src/odom.cpp)
+ament_target_dependencies(odom ${ament_dependencies}) 
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -66,5 +69,6 @@ install(TARGETS
   speed_control
   path_steering_and_kmph
   current_pose_from_tf
+  odom
   DESTINATION lib/${PROJECT_NAME})
 ament_package()
