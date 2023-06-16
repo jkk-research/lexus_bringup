@@ -15,7 +15,7 @@ euler_based_orientation:
 """
 def generate_launch_description():
     namespace_lx = "lexus3"
-    node_id = "/gps"
+    node_id = "/gps/duro"
     ld = LaunchDescription()
     duro_node = Node(
         package="duro_gps_driver",
