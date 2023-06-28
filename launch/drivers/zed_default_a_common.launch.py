@@ -81,7 +81,7 @@ def launch_setup(context, *args, **kwargs):
     publish_map_tf = LaunchConfiguration('publish_map_tf')
     xacro_path = LaunchConfiguration('xacro_path')
 
-    camera_name_val = "lexus3/" + camera_name.perform(context)
+    camera_name_val = camera_name.perform(context)
     camera_model_val = camera_model.perform(context)
 
     if (camera_name_val == ""):
