@@ -72,7 +72,7 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='left1_os_front_tf_publisher',
             output='screen',
-            arguments=['1.6', '0.5', '1.3','0', '0', '0', namespace + '/' + 'base_link', namespace + '/' + 'os_left_a'],
+            arguments=['0.75', '0.5', '1.3','0', '0', '0', namespace + '/' + 'base_link', namespace + '/' + 'os_left_a'],
         ),
         Node(
             package='tf2_ros',
