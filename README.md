@@ -89,3 +89,13 @@ colcon build --packages-select gui_lexus
 - [Install Pacmod3](https://github.com/astuff/pacmod3#installation)
 - [Install Kvaser](https://www.kvaser.com/canlib-webhelp/section_install_linux.html)
 - [Install Kvaser ROS Interface](https://github.com/astuff/kvaser_interface#installation)
+
+## Mako install 
+```
+cd ~/ros2_ws/src
+git clone https://github.com/astuff/avt_vimba_camera.git
+cd ~/ros2_ws/src/avt_vimba_camera
+git checkout ros2_master
+cd ~/ros2_ws
+colcon build --packages-select avt_vimba_camera
+```
