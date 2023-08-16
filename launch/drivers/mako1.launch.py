@@ -13,7 +13,7 @@ from launch.events import matches_action
 from launch.event_handlers import OnProcessIO
 from launch.events.process import ProcessIO
 
-nodename = "/mako_ns/mako1"
+nodename = "/lexus3/mako1"
 cue_line = "Starting continuous image acquisition ..."
 
 def outstr_action(m, s, r: launch.SomeActionsType):
@@ -22,24 +22,22 @@ def outstr_action(m, s, r: launch.SomeActionsType):
 
 def generate_launch_description():
 
-    avt_vimba_camera_ros2_pkg_dir = get_package_share_directory('avt_vimba_camera')
+    lexus_bringup_pkg_dir = get_package_share_directory('lexus_bringup')
+    cfg_dir = Path(lexus_bringup_pkg_dir) / 'launch' / 'drivers' / 'mako_cfg'
     
-    default_params_file = \
-        Path(avt_vimba_camera_ros2_pkg_dir) / 'config' / 'mako1.yaml'
+    default_params_file = cfg_dir / 'mako1.yaml'
     params_file = LaunchConfiguration('params_file')
     params_file_arg = DeclareLaunchArgument('params_file',
         default_value = str(default_params_file),
         description='Name or path to the parameters file to use.')
 
-    default_filter_file = \
-        Path(avt_vimba_camera_ros2_pkg_dir) / 'config' / 'param_filter.txt'
+    default_filter_file = cfg_dir / 'param_filter.txt'
     params_file = LaunchConfiguration('param_filter')
     params_file_arg = DeclareLaunchArgument('param_filter',
         default_value = str(default_filter_file),
         description='Name or path to the list of read-only parameters to be filtered.')
     
-    default_init_file = \
-        Path(avt_vimba_camera_ros2_pkg_dir) / 'config' / 'initparam.txt'
+    default_init_file = cfg_dir / 'initparam.txt'
     init_file = LaunchConfiguration('init_file')
     init_file_arg = DeclareLaunchArgument('init_file',
         default_value = str(default_init_file),
@@ -52,7 +50,7 @@ def generate_launch_description():
     cam1_ip = "" #str(ip1_cfg)
 
     mako_ns = LaunchConfiguration('mako_ns')
-    mako_ns_arg = DeclareLaunchArgument('mako_ns', default_value='lexus3/mako_ns')
+    mako_ns_arg = DeclareLaunchArgument('mako_ns', default_value='lexus3')
 
     params = {}
     init = {}
