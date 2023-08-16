@@ -1,0 +1,9 @@
+feature/PixelFormat: RGB8Packed
+feature/BinningHorizontal: 1
+feature/BinningVertical: 1
+feature/DecimationHorizontal: 1
+feature/DecimationVertical: 1
+feature/OffsetX: 0
+feature/OffsetY: 0
+feature/Width: 4
+feature/Height: 4
