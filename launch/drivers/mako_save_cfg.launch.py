@@ -17,7 +17,7 @@ def din(cfg, defval=''):
    finally:
       readline.set_startup_hook()
       
-cmd_info_prefix = "[mako_cfg_save] "
+cmd_info_prefix = "[mako_cfg_save]: "
 
 def checkfile(f):
     if isfile(f):
@@ -30,14 +30,19 @@ def generate_launch_description():
 
     print(cmd_info_prefix + "Preparing to save the configuration of a (singular) Allied Vision Technologies Mako camera from a ros2 node...")
 
-    filedir = input(" - Please type in a custom save directory or press Enter to automatically find and select the lexus_bringup package default 'mako_cfg' directory!\n")
+#    filedir = input(" - Please type in a custom save directory or press Enter to automatically find and select the lexus_bringup package default 'mako_cfg' directory!\n >")
+    filedir = input(" - save directory: ")
     if not filedir:
         lexus_bringup_pkg_dir = get_package_share_directory('lexus_bringup')
         cfg_dir = Path(lexus_bringup_pkg_dir) / 'launch' / 'drivers' / 'mako_cfg'
+
+    if filedir:
+#        print(filedir)
+        if filedir[-1] != '/': filedir = filedir + '/'
+    else: filedir = input(" - Error: Directory not found. Please type the path in manually!\n >")
+
     nodename = din(" - node name: ", "/lexus3/mako1")
 
-    if filedir[-1] != '/': filedir = filedir + '/'
-        
     file_iter = 1
     datestamp = datetime.date.today().strftime("%Y-%m-%d")
     base_name = nodename.replace("/", "_") + "_" + datestamp
