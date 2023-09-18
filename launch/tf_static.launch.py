@@ -40,8 +40,9 @@ def generate_launch_description():
             name='base_gps_tf_publisher',
             output='screen',
             # https://raw.githubusercontent.com/wiki/szenergy/szenergy-public-resources/img/2022.L.01.svg
-            arguments=['-1.542', '-0.49', '-1.479','0', '0', '0', '1', namespace + '/' + 'gps', namespace + '/' + 'base_link'], # TODO
+            arguments=['-1.542', '-0.49', '-1.479', '0.0', '0', '0', namespace + '/' + 'gps', namespace + '/' + 'base_link'], # TODO
         ),
+        # 1.5 deg to rad =  0.0261799
         Node(
             package='tf2_ros',
             #namespace='lexus3',

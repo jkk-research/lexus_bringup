@@ -8,7 +8,7 @@ import launch
 import lifecycle_msgs.msg
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node, LifecycleNode
-from launch.actions import (IncludeLaunchDescription, DeclareLaunchArgument,
+from launch.actions import (DeclareLaunchArgument, GroupAction,
                             RegisterEventHandler, EmitEvent, LogInfo)
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -16,6 +16,11 @@ from launch.substitutions import LaunchConfiguration
 from launch.events import matches_action
 from launch_ros.events.lifecycle import ChangeState
 from launch_ros.event_handlers import OnStateTransition
+#from launch_ros.actions import SetRemap
+from launch_ros.actions import PushRosNamespace
+
+
+
 
 
 
@@ -37,35 +42,47 @@ def generate_launch_description():
     ouster_ns_arg = DeclareLaunchArgument('ouster_ns', default_value='lexus3/os_left')
 
 
-    os_sensor = LifecycleNode(
+    os_driver = LifecycleNode(
         package='ouster_ros',
-        executable='os_sensor',
-        name='os_sensor',
-        namespace=ouster_ns,
+        executable='os_driver',
+        name="os_driver",
+        namespace="",
         parameters=[params_file],
         output='screen',
     )
 
+
+    # os_sensor = LifecycleNode(
+    #     package='ouster_ros',
+    #     executable='os_sensor',
+    #     name='os_sensor',
+    #     namespace='',
+    #     parameters=[params_file],
+    #     output='screen',
+    # )
+
     sensor_configure_event = EmitEvent(
         event=ChangeState(
-            lifecycle_node_matcher=matches_action(os_sensor),
+            lifecycle_node_matcher=matches_action(os_driver),
             transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
         )
     )
 
     sensor_activate_event = RegisterEventHandler(
         OnStateTransition(
-            target_lifecycle_node=os_sensor, goal_state='inactive',
+            target_lifecycle_node=os_driver, goal_state='inactive',
             entities=[
-                LogInfo(msg="os_sensor activating... lexus3/os_left"),
+                LogInfo(msg="os_driver activating... lexus3/os_left"),
                 EmitEvent(event=ChangeState(
-                    lifecycle_node_matcher=matches_action(os_sensor),
+                    lifecycle_node_matcher=matches_action(os_driver),
                     transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
                 )),
             ],
             handle_once=True
         )
     )
+
+    
 
     # TODO: figure out why registering for on_shutdown event causes an exception
     # and error handling
@@ -81,14 +98,14 @@ def generate_launch_description():
     #     )
     # )
 
-    os_cloud = Node(
-        package='ouster_ros',
-        executable='os_cloud',
-        name='os_cloud',
-        namespace=ouster_ns,
-        parameters=[params_file],
-        output='screen',
-    )
+    # os_cloud = Node(
+    #     package='ouster_ros',
+    #     executable='os_cloud',
+    #     name='os_cloud',
+    #     namespace=ouster_ns,
+    #     parameters=[params_file],
+    #     output='screen',
+    # )
 
     # os_image = Node(
     #     package='ouster_ros',
@@ -96,22 +113,31 @@ def generate_launch_description():
     #     name='os_image',
     #     namespace=ouster_ns,
     #     parameters=[params_file],
-    #     remappings=[
-    #         ('/ouster/range_image',  node_id  + '/range_image'),
-    #         ('/ouster/nearir_image',  node_id  + '/nearir_image'),
-    #         ('/ouster/reflec_image',  node_id  + '/reflec_image'),
-    #         ('/ouster/signal_image',  node_id  + '/signal_image'),
-    #     ],
     #     output='screen',
     # )
     
+    # return launch.LaunchDescription([
+    #     params_file_arg,
+    #     ouster_ns_arg,
+    #     os_sensor,
+    #     os_cloud,
+    #     # os_image,
+    #     sensor_configure_event,
+    #     sensor_activate_event,
+    #     # shutdown_event
+    # ])
+
     return launch.LaunchDescription([
-        params_file_arg,
-        ouster_ns_arg,
-        os_sensor,
-        os_cloud,
-        # os_image,
-        sensor_configure_event,
-        sensor_activate_event,
-        # shutdown_event
+        GroupAction(
+            actions=[
+                PushRosNamespace('lexus3/os_left'),
+                params_file_arg,
+                ouster_ns_arg,
+                os_driver,
+                #os_cloud,
+                # os_image,
+                sensor_configure_event,
+                sensor_activate_event,
+            ]
+        )
     ])
