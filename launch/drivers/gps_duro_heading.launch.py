@@ -21,7 +21,7 @@ def generate_launch_description():
         package="duro_gps_driver",
         executable="duro_node",
         parameters=[
-            {"ip_address": "192.168.1.11"},
+            {"ip_address": "192.168.10.11"},
             {"port": 55555},
             {"gps_receiver_frame_id": namespace_lx + "duro"},
             {"imu_frame_id": namespace_lx + "duro"},
