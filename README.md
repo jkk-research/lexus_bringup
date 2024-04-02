@@ -1,6 +1,7 @@
 # `lexus_bringup` ROS2 package
 🚗 ROS2 package for basic functions on Lexus rx450h
 
+[![Static Badge](https://img.shields.io/badge/ROS_2-Humble-34aec5)](https://docs.ros.org/en/humble/)
 
 ## Build
 

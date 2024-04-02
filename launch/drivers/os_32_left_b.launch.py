@@ -31,7 +31,7 @@ def generate_launch_description():
     """
     lexus_ros_pkg_dir = get_package_share_directory('lexus_bringup')
     default_params_file = \
-        Path(lexus_ros_pkg_dir) / 'launch' / 'drivers' / 'ouster_config.yaml'
+        Path(lexus_ros_pkg_dir) / 'launch' / 'drivers' / 'ouster_config_b.yaml'
     params_file = LaunchConfiguration('params_file')
     params_file_arg = DeclareLaunchArgument('params_file',
                                             default_value=str(
