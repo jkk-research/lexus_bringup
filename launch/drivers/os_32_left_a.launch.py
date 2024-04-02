@@ -15,8 +15,8 @@
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch_ros.actions import LifecycleNode, SetRemap
-from launch.actions import DeclareLaunchArgument, GroupAction
+from launch_ros.actions import Node, LifecycleNode
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch.actions import EmitEvent
 from launch.actions import RegisterEventHandler
@@ -93,12 +93,22 @@ def generate_launch_description():
         )
     )
 
+    static_tf = Node(
+        package='tf2_ros',
+        #namespace='lexus3',
+        executable='static_transform_publisher',
+        name=node_name + '_180_tf_publisher',
+        output='screen',
+        arguments=['0.0', '0.0', '0.0', '3.14159265359', '0.0', '0.0', namespace + '/' + node_name +'_a', namespace + '/' + node_name + '_180'],
+    )
+
     return LaunchDescription([
         params_declare,
         driver_node,
         activate_event,
         configure_event,
         shutdown_event,
+        static_tf,
     ])
 
 

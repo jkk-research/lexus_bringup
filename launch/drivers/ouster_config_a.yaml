@@ -5,7 +5,7 @@ os_center:
     lidar_mode: "1024x20"
     lidar_port: 7505
     imu_port: 7504
-    sensor_frame: lexus3/os_center_a
+    sensor_frame: lexus3/os_center_180
     laser_frame: lexus3/os_center_a_laser
     imu_frame: lexus3/os_center_a_imu
 
@@ -59,7 +59,7 @@ os_right:
     lidar_mode: "1024x20"
     lidar_port: 7503
     imu_port: 7502
-    sensor_frame: lexus3/os_right_a
+    sensor_frame: lexus3/os_right_180
     laser_frame: lexus3/os_right_a_laser
     imu_frame: lexus3/os_right_a_imu
     use_system_default_qos: True
@@ -74,7 +74,7 @@ os_left:
     lidar_mode: "1024x20"
     lidar_port: 7507
     imu_port: 7506
-    sensor_frame: lexus3/os_left_a
+    sensor_frame: lexus3/os_left_180
     laser_frame: lexus3/os_left_a_laser
     imu_frame: lexus3/os_left_a_imu
     use_system_default_qos: True
