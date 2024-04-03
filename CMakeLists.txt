@@ -47,6 +47,8 @@ add_executable(current_pose_from_tf src/current_pose_from_tf.cpp)
 ament_target_dependencies(current_pose_from_tf ${ament_dependencies}) 
 add_executable(odom src/odom.cpp)
 ament_target_dependencies(odom ${ament_dependencies}) 
+add_executable(vehicle_status_from_pacmod src/vehicle_status_from_pacmod.cpp)
+ament_target_dependencies(vehicle_status_from_pacmod ${ament_dependencies})
 
 
 if(BUILD_TESTING)
@@ -69,6 +71,7 @@ install(TARGETS
   speed_control
   path_steering_and_kmph
   current_pose_from_tf
+  vehicle_status_from_pacmod
   odom
   DESTINATION lib/${PROJECT_NAME})
 ament_package()
