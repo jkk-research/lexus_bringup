@@ -18,7 +18,7 @@ euler_based_orientation:
 # -639770.0 -5195040.0 map_zala_0
 
 def generate_launch_description():
-    namespace_lx = "lexus3"
+    ns_vehicle = "lexus3"
     node_id = "/gps/duro"
     ld = LaunchDescription()
     duro_node = Node(
@@ -27,8 +27,8 @@ def generate_launch_description():
         parameters=[
             {"ip_address": "192.168.10.11"}, 
             {"port": 55555},
-            {"gps_receiver_frame_id": namespace_lx + "duro"},
-            {"imu_frame_id": namespace_lx + "duro"},
+            {"gps_receiver_frame_id": ns_vehicle + "duro"},
+            {"imu_frame_id": ns_vehicle + "duro"},
             {"utm_frame_id": "map"},
             {"orientation_source": "gps"},
             {"z_coord_ref_switch": "exact"},
@@ -44,7 +44,7 @@ def generate_launch_description():
             {"tf_child_frame_id": "lexus3/gps"},
             {"euler_based_orientation": True}           
         ],
-        namespace=namespace_lx + node_id,
+        namespace=ns_vehicle + node_id,
     )
     ld.add_action(duro_node)
     return ld

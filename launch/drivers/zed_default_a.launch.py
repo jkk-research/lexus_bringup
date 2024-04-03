@@ -20,6 +20,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import PushRosNamespace
 
+ns_vehicle = "lexus3"
 
 def generate_launch_description():
 
@@ -28,7 +29,7 @@ def generate_launch_description():
     bringup_cmd_group = GroupAction(
         [
             PushRosNamespace(
-                namespace="lexus3",
+                namespace = ns_vehicle,
             ),
 
             # ZED Wrapper node

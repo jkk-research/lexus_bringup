@@ -19,7 +19,7 @@ euler_based_orientation:
 
 
 def generate_launch_description():
-    namespace_lx = "lexus3"
+    ns_vehicle = "lexus3"
     node1_id = "/gps/duro/ref"
     node2_id = "/gps/duro/hea"
 
@@ -31,8 +31,8 @@ def generate_launch_description():
             parameters=[
                 {"ip_address": "192.168.10.11"},
                 {"port": 55555},
-                {"gps_receiver_frame_id": namespace_lx + "duro" + "/ref"},
-                {"imu_frame_id": namespace_lx + "duro" + "/ref"},
+                {"gps_receiver_frame_id": ns_vehicle + "duro" + "/ref"},
+                {"imu_frame_id": ns_vehicle + "duro" + "/ref"},
                 {"utm_frame_id": "map"},
                 {"orientation_source": "gps"},
                 {"z_coord_ref_switch": "exact"},
@@ -50,7 +50,7 @@ def generate_launch_description():
                 {"publish_odom_messages": False}, # default is True
                 {"publish_tf": True}, # default is True
             ],
-            namespace=namespace_lx + node1_id,
+            namespace=ns_vehicle + node1_id,
         ),
         Node(
             package="duro_gps_driver",
@@ -59,8 +59,8 @@ def generate_launch_description():
             parameters=[
                 {"ip_address": "192.168.10.10"},
                 {"port": 55555},
-                {"gps_receiver_frame_id": namespace_lx + "duro" + "/hea"},
-                {"imu_frame_id": namespace_lx + "duro" + "/heading"},
+                {"gps_receiver_frame_id": ns_vehicle + "duro" + "/hea"},
+                {"imu_frame_id": ns_vehicle + "duro" + "/heading"},
                 {"utm_frame_id": "map"},
                 {"orientation_source": "gps"},
                 {"z_coord_ref_switch": "exact"},
@@ -79,7 +79,7 @@ def generate_launch_description():
                 {"publish_odom_messages": False}, #  default is True
                 {"publish_tf": False}, #  default is True
             ],
-            namespace=namespace_lx + node2_id,
+            namespace=ns_vehicle + node2_id,
         ),
 
     ])

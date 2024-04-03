@@ -34,6 +34,7 @@ from launch.substitutions import (
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
+ns_vehicle = 'lexus3'
 
 def generate_launch_description():
     current_pkg = FindPackageShare("kiss_icp")
@@ -57,7 +58,7 @@ def generate_launch_description():
                 executable="odometry_node",
                 name="odometry_node",
                 output="screen",
-                namespace="lexus3",
+                namespace = ns_vehicle,
                 # remappings=[("pointcloud_topic", LaunchConfiguration("topic"))],
                 remappings=[("pointcloud_topic", "/lexus3/os_center/points")],
                 parameters=[

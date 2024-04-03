@@ -32,7 +32,7 @@ import os
 
 
 def generate_launch_description():
-    namespace = "/lexus3"
+    ns_vehicle = "/lexus3"
     share_dir = get_package_share_directory('lexus_bringup')
     ouster_dir = get_package_share_directory('ros2_ouster')
     parameter_file = LaunchConfiguration('params_file')
@@ -51,10 +51,10 @@ def generate_launch_description():
                                 emulate_tty=True,
                                 parameters=[parameter_file],
                                 arguments=['--ros-args', '--log-level', 'INFO'],
-                                # namespace=namespace + '/' + node_name,
+                                # namespace=ns_vehicle + '/' + node_name,
                                 namespace='/',
                                 remappings=[
-                                    ('/points', namespace + "/" + node_name + '/points'),
+                                    ('/points', ns_vehicle + "/" + node_name + '/points'),
         ]
                                 )
     configure_event = EmitEvent(
@@ -95,11 +95,11 @@ def generate_launch_description():
 
     static_tf = Node(
         package='tf2_ros',
-        #namespace='lexus3',
+        #namespace=ns_vehicle,
         executable='static_transform_publisher',
         name=node_name + '_180_tf_publisher',
         output='screen',
-        arguments=['0.0', '0.0', '0.0', '3.14159265359', '0.0', '0.0', namespace + '/' + node_name +'_a', namespace + '/' + node_name + '_180'],
+        arguments=['0.0', '0.0', '0.0', '3.14159265359', '0.0', '0.0', ns_vehicle + '/' + node_name +'_a', ns_vehicle + '/' + node_name + '_180'],
     )
 
     return LaunchDescription([

@@ -12,7 +12,6 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='rviz2',
-            namespace='',
             executable='rviz2',
             name='rviz2',
             arguments=['-d', [os.path.join(pkg_dir, 'etc', 'lexus00.rviz')]]

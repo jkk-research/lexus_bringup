@@ -34,19 +34,17 @@ public:
     this->get_parameter("i_gain_brake", i_gain_brake);
     this->get_parameter("d_gain_brake", d_gain_brake);
 
-    this->declare_parameter<std::string>("lx_namespace", "");
-    this->get_parameter("lx_namespace", lx_namespace);
-    sub_current_speed = this->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>(lx_namespace + "/pacmod/vehicle_speed_rpt", 10, std::bind(&SpeedControl::speedCurrentCallback, this, _1));
-    sub_reference_speed = this->create_subscription<geometry_msgs::msg::Twist>(lx_namespace + "/cmd_vel", 10, std::bind(&SpeedControl::speedReferenceCallback, this, _1));
-    sub_autonom_reinint = this->create_subscription<std_msgs::msg::Bool>(lx_namespace + "/control_reinit", 10, std::bind(&SpeedControl::autonomReinitCallback, this, _1));
+    sub_current_speed = this->create_subscription<pacmod3_msgs::msg::VehicleSpeedRpt>("pacmod/vehicle_speed_rpt", 10, std::bind(&SpeedControl::speedCurrentCallback, this, _1));
+    sub_reference_speed = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&SpeedControl::speedReferenceCallback, this, _1));
+    sub_autonom_reinint = this->create_subscription<std_msgs::msg::Bool>("control_reinit", 10, std::bind(&SpeedControl::autonomReinitCallback, this, _1));
 
-    accel_pub = this->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>(lx_namespace + "/pacmod/accel_cmd", 10);
-    brake_pub = this->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>(lx_namespace + "/pacmod/brake_cmd", 10);
-    steer_pub = this->create_publisher<pacmod3_msgs::msg::SteeringCmd>(lx_namespace + "/pacmod/steering_cmd", 10);
-    enable_pub = this->create_publisher<std_msgs::msg::Bool>(lx_namespace + "/pacmod/enable", 10);
-    status_string_pub = this->create_publisher<std_msgs::msg::String>(lx_namespace + "/control_status", 10);
+    accel_pub = this->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("pacmod/accel_cmd", 10);
+    brake_pub = this->create_publisher<pacmod3_msgs::msg::SystemCmdFloat>("pacmod/brake_cmd", 10);
+    steer_pub = this->create_publisher<pacmod3_msgs::msg::SteeringCmd>("pacmod/steering_cmd", 10);
+    enable_pub = this->create_publisher<std_msgs::msg::Bool>("pacmod/enable", 10);
+    status_string_pub = this->create_publisher<std_msgs::msg::String>("control_status", 10);
 
-    RCLCPP_INFO_STREAM(this->get_logger(), "Starting longitudinal (speed) control. Namespace: " << lx_namespace);
+    RCLCPP_INFO_STREAM(this->get_logger(), "Starting longitudinal (speed) control. Namespace: " << this->get_namespace());
     RCLCPP_INFO_STREAM(this->get_logger(), "Accel PID: " << p_gain_accel << " | " << i_gain_accel << " | " << d_gain_accel);
     RCLCPP_INFO_STREAM(this->get_logger(), "Brake PID: " << p_gain_brake << " | " << i_gain_brake << " | " << d_gain_brake);
   }

@@ -21,7 +21,6 @@ def generate_launch_description():
             package='patchworkpp',
             executable='demo',
             name='ground_segmentation',
-            # namespace='lexus3',
             output='screen',
             parameters=[
                 {'cloud_topic': '/lexus3/os_center/points'}, # Input pointcloud

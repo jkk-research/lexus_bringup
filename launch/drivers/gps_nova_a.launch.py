@@ -6,8 +6,8 @@ from launch import LaunchDescription
 import launch_ros.actions
 
 nova_pkg = "novatel_gps_driver"
-namespace_lx = "lexus3"
-namespace_no = "/gps/nova"
+ns_vehicle = "lexus3"
+ns_nova = "/gps/nova"
 
 # -697237.0 -5285644.0 map_gyor_0
 # -639770.0 -5195040.0 map_zala_0
@@ -21,7 +21,7 @@ def generate_launch_description():
         composable_node_descriptions=[
             launch_ros.descriptions.ComposableNode(
                 package=nova_pkg,
-                namespace= namespace_lx + namespace_no,
+                namespace= ns_vehicle + ns_nova,
                 plugin='novatel_gps_driver::NovatelGpsNode',
                 name='novatel_gps',
                 parameters=[{
@@ -37,7 +37,7 @@ def generate_launch_description():
                     'publish_novatel_velocity': False,
                     'publish_novatel_psrdop2': False,
                     'imu_frame_id': '/lexus3/nova/imu',
-                    'frame_id': namespace_lx + namespace_no,
+                    'frame_id': ns_vehicle + ns_nova,
                     'publish_novatel_dual_antenna_heading': True,
                     # 'x_coord_offset': 0.0,
                     # 'y_coord_offset': 0.0,
@@ -48,7 +48,7 @@ def generate_launch_description():
                     'z_coord_exact_height': 1.8,
                     'z_coord_ref_switch': "exact",
                     'tf_frame_id': "map",
-                    'tf_child_frame_id': namespace_lx + "/nova/gps",
+                    'tf_child_frame_id': ns_vehicle + "/nova/gps",
                     'utm_frame_id': "map",
                 }]
             )

@@ -7,7 +7,7 @@ def generate_launch_description():
     #pkg_name = 'lexus_bringup'
     #pkg_dir = os.popen('/bin/bash -c "source /usr/share/colcon_cd/function/colcon_cd.sh && colcon_cd %s && pwd"' % pkg_name).read().strip()
 
-    namespace = "lexus3"
+    ns_vehicle = "lexus3"
 
     return LaunchDescription([
         Node(
@@ -28,11 +28,10 @@ def generate_launch_description():
         ),
         Node(
             package='tf2_ros',
-            #namespace='lexus3',
             executable='static_transform_publisher',
             name='duro_gps_tf_publisher',
             output='screen',
-            arguments=['1.6', '0.0', '0.2','0', '0', '0', '1', namespace + '/' + 'base_link', namespace + '/' + 'duro_gps'],
+            arguments=['1.6', '0.0', '0.2','0', '0', '0', '1', ns_vehicle + '/' + 'base_link', ns_vehicle + '/' + 'duro_gps'],
         ),
         Node(
             package='tf2_ros',
@@ -40,55 +39,50 @@ def generate_launch_description():
             name='base_gps_tf_publisher',
             output='screen',
             # https://raw.githubusercontent.com/wiki/szenergy/szenergy-public-resources/img/2022.L.01.svg
-            arguments=['-1.542', '-0.49', '-1.479', '0.0', '0', '0', namespace + '/' + 'gps', namespace + '/' + 'base_link'], # TODO
+            arguments=['-1.542', '-0.49', '-1.479', '0.0', '0', '0', ns_vehicle + '/' + 'gps', ns_vehicle + '/' + 'base_link'], # TODO
         ),
         # 1.5 deg to rad =  0.0261799
         Node(
             package='tf2_ros',
-            #namespace='lexus3',
             executable='static_transform_publisher',
             name='zed_camera_front_tf_publisher',
             output='screen',
-            arguments=['1.6', '0.0', '1.286','0', '0', '0', '1', namespace + '/' + 'base_link', namespace + '/' +'_left_camera_frame'],
+            arguments=['1.6', '0.0', '1.286','0', '0', '0', '1', ns_vehicle + '/' + 'base_link', ns_vehicle + '/' +'_left_camera_frame'],
         ),
         Node(
             package='tf2_ros',
-            #namespace='lexus3',
+            #namespace=ns_vehicle,
             executable='static_transform_publisher',
             name='duro_gps_imu_tf_publisher',
             output='screen',
-            arguments=['0.0', '0.0', '0.2','0', '0', '0', '1', namespace + '/' + 'base_link', namespace + '/' + 'duro_gps_imu'],
+            arguments=['0.0', '0.0', '0.2','0', '0', '0', '1', ns_vehicle + '/' + 'base_link', ns_vehicle + '/' + 'duro_gps_imu'],
         ),
         Node(
             package='tf2_ros',
-            #namespace='lexus3',
             executable='static_transform_publisher',
             name='base_link_ground_link_publisher',
             output='screen',
-            arguments=['0.0', '0.0', '-0.37','0', '0', '0', '1', namespace + '/' + 'base_link', namespace + '/' + 'ground_link'],
+            arguments=['0.0', '0.0', '-0.37','0', '0', '0', '1', ns_vehicle + '/' + 'base_link', ns_vehicle + '/' + 'ground_link'],
         ),
         Node(
             package='tf2_ros',
-            #namespace='lexus3',
             executable='static_transform_publisher',
             name='left1_os_front_tf_publisher',
             output='screen',
-            arguments=['0.75', '0.5', '1.3','0', '0', '0', namespace + '/' + 'base_link', namespace + '/' + 'os_left_a'],
+            arguments=['0.75', '0.5', '1.3','0', '0', '0', ns_vehicle + '/' + 'base_link', ns_vehicle + '/' + 'os_left_a'],
         ),
         Node(
             package='tf2_ros',
-            #namespace='lexus3',
             executable='static_transform_publisher',
             name='right1_os_front_tf_publisher',
             output='screen',
-            arguments=['1.53', '-0.5', '1.41','0', '0', '0', namespace + '/' + 'base_link', namespace + '/' + 'os_right_a'],
+            arguments=['1.53', '-0.5', '1.41','0', '0', '0', ns_vehicle + '/' + 'base_link', ns_vehicle + '/' + 'os_right_a'],
         ),
         Node(
             package='tf2_ros',
-            #namespace='lexus3',
             executable='static_transform_publisher',
             name='center1_os_front_tf_publisher',
             output='screen',
-            arguments=['0.75', '0.0', '1.91','0', '0', '0', namespace + '/' + 'base_link', namespace + '/' + 'os_center_a'],
+            arguments=['0.75', '0.0', '1.91','0', '0', '0', ns_vehicle + '/' + 'base_link', ns_vehicle + '/' + 'os_center_a'],
         )
     ])
