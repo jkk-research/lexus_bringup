@@ -34,7 +34,7 @@ import os
 def generate_launch_description():
     namespace = "/lexus3"
     share_dir = get_package_share_directory('lexus_bringup')
-    # ouster_dir = get_package_share_directory('ros2_ouster')
+    ouster_dir = get_package_share_directory('ros2_ouster')
     parameter_file = LaunchConfiguration('params_file')
     node_name = 'os_center' 
 

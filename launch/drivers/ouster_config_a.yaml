@@ -1,7 +1,7 @@
 os_center:
   ros__parameters:
-    lidar_ip: 192.168.10.20  # http://os-992219000350.local/
-    computer_ip: 192.168.10.5
+    lidar_ip: 192.168.1.204    # http://os-992219000350.local/
+    computer_ip: 192.168.1.100
     lidar_mode: "1024x20"
     lidar_port: 7505
     imu_port: 7504
@@ -54,8 +54,8 @@ os_center:
 
 os_right:
   ros__parameters:
-    lidar_ip: 192.168.10.21 # 'os-122231000907.local'
-    computer_ip: 192.168.10.5
+    lidar_ip: 192.168.1.101 # 'os-122231000907.local'
+    computer_ip: 192.168.1.100
     lidar_mode: "1024x20"
     lidar_port: 7503
     imu_port: 7502
@@ -69,8 +69,8 @@ os_right:
 
 os_left:
   ros__parameters:
-    lidar_ip: 192.168.10.22 # 'os-122227001628.local'
-    computer_ip: 192.168.10.5
+    lidar_ip: 192.168.1.102 # 'os-122227001628.local'
+    computer_ip: 192.168.1.100
     lidar_mode: "1024x20"
     lidar_port: 7507
     imu_port: 7506
