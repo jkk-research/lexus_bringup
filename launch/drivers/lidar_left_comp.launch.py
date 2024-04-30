@@ -8,7 +8,7 @@ import launch
 from ament_index_python.packages import get_package_share_directory
 from launch.actions import (DeclareLaunchArgument, GroupAction, TimerAction, ExecuteProcess)
 from launch.substitutions import LaunchConfiguration, FindExecutable
-from launch_ros.actions import PushRosNamespace, LoadComposableNodes, Node
+from launch_ros.actions import PushRosNamespace, LoadComposableNodes, Node, ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 
 
@@ -17,15 +17,17 @@ def generate_launch_description():
     Generate launch description for running ouster_ros components separately each
     component will run in a separate process).
     """
-    aw_pkg_dir = get_package_share_directory('autoware_launch')
+    node_name = "os_left"
+    namespace = "/lexus3"
+    aw_pkg_dir = get_package_share_directory('lexus_bringup')
     default_params_file = \
-        Path(aw_pkg_dir) / 'launch' / 'lidar_config_comp.yaml'
+        Path(aw_pkg_dir) / 'launch' / 'drivers' / 'ouster_config_a.yaml'
     params_file = LaunchConfiguration('params_file')
     params_file_arg = DeclareLaunchArgument('params_file',
                                             default_value=str(
                                                 default_params_file),
                                             description='name or path to the parameters file to use.')
-    
+
     container_name_arg = DeclareLaunchArgument('pointcloud_container_name', default_value='pointcloud_container')
 
     container = Node(
@@ -39,32 +41,34 @@ def generate_launch_description():
         target_container=LaunchConfiguration('pointcloud_container_name'),
         composable_node_descriptions=[
             ComposableNode(
-                package='ouster_ros',
-                plugin='ouster_ros::OusterSensor',
-                name="os_sensor",
+                package='ros2_ouster',
+                plugin='ros2_ouster::Driver',
+                name="os_left",
                 namespace="",
                 parameters=[params_file],
-                extra_arguments=[{'use_intra_process_comms': True}],
-            ),
-            ComposableNode(
-                package='ouster_ros',
-                plugin='ouster_ros::OusterCloud',
-                name="os_cloud",
-                namespace="",
-                parameters=[params_file],
+                remappings=[('/points', namespace + "/os_left" + '/points')],
                 extra_arguments=[{'use_intra_process_comms': True}],
             )
         ],
     )
-    
+
+    static_tf = Node(
+        package='tf2_ros',
+        #namespace='lexus3',
+        executable='static_transform_publisher',
+        name=node_name + '_180_tf_publisher',
+        output='screen',
+        arguments=['0.0', '0.0', '0.0', '3.14159265359', '0.0', '0.0', namespace + '/' + node_name +'_a', namespace + '/' + node_name + '_180'],
+    )
+
     def invoke_lifecycle_cmd(node_name, verb):
         ros2_exec = FindExecutable(name='ros2')
         return ExecuteProcess(
-            cmd=[[ros2_exec, ' lifecycle set /lexus3/os_left/os_sensor ', verb]],
+            cmd=[[ros2_exec, ' lifecycle set /', node_name, ' ', verb]],
             shell=True)
 
-    sensor_configure_cmd = invoke_lifecycle_cmd('os_sensor', 'configure')
-    sensor_activate_cmd = invoke_lifecycle_cmd('os_sensor', 'activate')
+    sensor_configure_cmd = invoke_lifecycle_cmd('os_left', 'configure')
+    sensor_activate_cmd = invoke_lifecycle_cmd('os_left', 'activate')
 
     return launch.LaunchDescription([
         params_file_arg,
@@ -72,10 +76,10 @@ def generate_launch_description():
         container,
         GroupAction(
             actions=[
-                PushRosNamespace('lexus3/os_left'),
-                load_composable_nodes
+                load_composable_nodes,
             ]
         ),
         sensor_configure_cmd,
-        TimerAction(period=1.0, actions=[sensor_activate_cmd])
+        TimerAction(period=1.0, actions=[sensor_activate_cmd]),
+        static_tf
     ])
