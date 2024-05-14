@@ -3,6 +3,8 @@
 
 """Launch a sensor node along with..."""
 
+import os
+
 from pathlib import Path
 import launch
 from ament_index_python.packages import get_package_share_directory
@@ -27,6 +29,12 @@ def generate_launch_description():
                                             default_value=str(
                                                 default_params_file),
                                             description='name or path to the parameters file to use.')
+
+    merger_config = os.path.join(
+        get_package_share_directory('pointcloud_manager'),
+        'config',
+        'params.yaml'
+    )
 
     container_name_arg = DeclareLaunchArgument('pointcloud_container_name', default_value='pointcloud_container')
 
@@ -59,6 +67,13 @@ def generate_launch_description():
                 name="os_center",
                 parameters=[params_file],
                 remappings=[('/points', namespace + "/os_center" + '/points')],
+                extra_arguments=[{'use_intra_process_comms': True}],
+            ),
+            ComposableNode(
+                package='pointcloud_manager',
+                plugin='pointcloud_merger::PCLMerger',
+                name="pointcloud_merger",
+                parameters=[merger_config],
                 extra_arguments=[{'use_intra_process_comms': True}],
             )
         ]
@@ -94,7 +109,7 @@ def generate_launch_description():
         TimerAction(period=1.0, actions=[sensor_right_activate_cmd]),
         sensor_left_configure_cmd,
         TimerAction(period=60.0, actions=[sensor_left_activate_cmd]),
-        sensor_center_configure_cmd,
-        TimerAction(period=120.0, actions=[sensor_center_activate_cmd])
+        # sensor_center_configure_cmd,
+        # TimerAction(period=120.0, actions=[sensor_center_activate_cmd])
         # static_tf
     ])
