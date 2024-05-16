@@ -111,5 +111,5 @@ def generate_launch_description():
         TimerAction(period=60.0, actions=[sensor_left_activate_cmd]),
         # sensor_center_configure_cmd,
         # TimerAction(period=120.0, actions=[sensor_center_activate_cmd])
-        # static_tf
+        static_tf
     ])

@@ -69,7 +69,7 @@ os_right:
 
 os_left:
   ros__parameters:
-    lidar_ip: 192.168.1.101 # 'os-122227001628.local'
+    lidar_ip: 192.168.1.103 # 'os-122227001628.local'
     computer_ip: 192.168.1.102
     lidar_mode: "1024x20"
     lidar_port: 7507
