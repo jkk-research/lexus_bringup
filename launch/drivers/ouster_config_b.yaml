@@ -19,8 +19,8 @@ lexus3/os_center/os_cloud:
     timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode
 lexus3/os_right/os_driver:
   ros__parameters:
-    sensor_hostname: '192.168.10.21' # 'os-122231000907.local'
-    udp_dest: '192.168.10.5'
+    sensor_hostname: '192.168.1.102' # 'os-122231000907.local'
+    udp_dest: '192.168.1.101'
     mtp_dest: ''
     mtp_main: false
     lidar_mode: '1024x20'
@@ -38,8 +38,8 @@ lexus3/os_right/os_cloud:
     timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode
 lexus3/os_left/os_driver:
   ros__parameters:
-    sensor_hostname: '192.168.10.22' # 'os-122227001628.local'
-    udp_dest: '192.168.10.5'
+    sensor_hostname: '192.168.1.100' # 'os-122227001628.local'
+    udp_dest: '192.168.1.101'
     mtp_dest: ''
     mtp_main: false
     lidar_mode: '1024x20'
