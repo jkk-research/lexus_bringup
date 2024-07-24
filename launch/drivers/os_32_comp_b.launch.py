@@ -26,6 +26,12 @@ def generate_launch_description():
                                                 default_params_file),
                                             description='name or path to the parameters file to use.')
 
+    # import yaml
+    # with open(default_params_file, 'r') as file:
+    #     params = yaml.safe_load(file)
+    #     print("Loaded parameters from ouster_config_b.yaml:")
+    #     print(params)
+
     # TODO: untangle namespaces (ouster_ns, /lexus3), any needed for launch, conventions etc.
     ouster_ns = LaunchConfiguration('ouster_ns')
     ouster_ns_arg = DeclareLaunchArgument(
@@ -37,20 +43,20 @@ def generate_launch_description():
     os_left = ComposableNode(
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
-        name='os_left',
-        namespace='',
+        name='os_driver',
+        namespace='os_left',
         parameters=[params_file],
-        remappings=[('/points', NAMESPACE + "/os_left" + '/points')],
+        # remappings=[('/points', NAMESPACE + "/os_left" + '/points')],
         # extra_arguments=[{'use_intra_process_comms': True}],
     )
 
     os_right = ComposableNode(
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
-        name='os_right',
-        namespace='',
+        name='os_driver',
+        namespace='os_right',
         parameters=[params_file],
-        remappings=[('/points', NAMESPACE + "/os_right" + '/points')],
+        # remappings=[('/points', NAMESPACE + "/os_right" + '/points')],
         # extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -72,10 +78,10 @@ def generate_launch_description():
             cmd=[[ros2_exec, ' lifecycle set /', node_name, ' ', verb]],
             shell=True)
 
-    sensor_left_configure_cmd = invoke_lifecycle_cmd('os_left', 'configure')
-    sensor_left_activate_cmd = invoke_lifecycle_cmd('os_left', 'activate')
-    sensor_right_configure_cmd = invoke_lifecycle_cmd('os_right', 'configure')
-    sensor_right_activate_cmd = invoke_lifecycle_cmd('os_right', 'activate')
+    sensor_left_configure_cmd = invoke_lifecycle_cmd('os_left/os_driver', 'configure')
+    sensor_left_activate_cmd = invoke_lifecycle_cmd('os_left/os_driver', 'activate')
+    sensor_right_configure_cmd = invoke_lifecycle_cmd('os_right/os_driver', 'configure')
+    sensor_right_activate_cmd = invoke_lifecycle_cmd('os_right/os_driver', 'activate')
 
     return LaunchDescription([
         params_file_arg,
@@ -85,8 +91,8 @@ def generate_launch_description():
         TimerAction(period=2.0, actions=[sensor_left_configure_cmd]),
         TimerAction(period=10.0, actions=[sensor_left_activate_cmd]),
         # PushRosNamespace('lexus3/os_right'),
-        TimerAction(period=2.0, actions=[sensor_right_configure_cmd]),
-        TimerAction(period=10.0, actions=[sensor_right_activate_cmd]),
+        TimerAction(period=12.0, actions=[sensor_right_configure_cmd]),
+        TimerAction(period=20.0, actions=[sensor_right_activate_cmd]),
         # static_tf  # TODO: add later
     ])
 
