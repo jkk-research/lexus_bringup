@@ -15,7 +15,7 @@ def generate_launch_description():
     process/container.
     """
     NODE_NAME = "os_comp"
-    NAMESPACE = "/lexus3"
+    NAMESPACE = "lexus3"
 
     pkg_dir = get_package_share_directory('lexus_bringup')
     default_params_file = \
@@ -33,7 +33,7 @@ def generate_launch_description():
     #     print(params)
 
     # TODO: untangle namespaces (ouster_ns, /lexus3), any needed for launch, conventions etc.
-    ouster_ns = LaunchConfiguration('ouster_ns')
+    ouster_ns = LaunchConfiguration('lexus3')
     ouster_ns_arg = DeclareLaunchArgument(
         'ouster_ns', default_value='ouster')
     
@@ -44,7 +44,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='os_left',
+        namespace='lexus3/os_left',
         parameters=[params_file],
         # remappings=[('/points', NAMESPACE + "/os_left" + '/points')],
         # extra_arguments=[{'use_intra_process_comms': True}],
@@ -54,7 +54,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='os_right',
+        namespace='lexus3/os_right',
         parameters=[params_file],
         # remappings=[('/points', NAMESPACE + "/os_right" + '/points')],
         # extra_arguments=[{'use_intra_process_comms': True}],
@@ -78,10 +78,10 @@ def generate_launch_description():
             cmd=[[ros2_exec, ' lifecycle set /', node_name, ' ', verb]],
             shell=True)
 
-    sensor_left_configure_cmd = invoke_lifecycle_cmd('os_left/os_driver', 'configure')
-    sensor_left_activate_cmd = invoke_lifecycle_cmd('os_left/os_driver', 'activate')
-    sensor_right_configure_cmd = invoke_lifecycle_cmd('os_right/os_driver', 'configure')
-    sensor_right_activate_cmd = invoke_lifecycle_cmd('os_right/os_driver', 'activate')
+    sensor_left_configure_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'configure')
+    sensor_left_activate_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'activate')
+    sensor_right_configure_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'configure')
+    sensor_right_activate_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'activate')
 
     return LaunchDescription([
         params_file_arg,
