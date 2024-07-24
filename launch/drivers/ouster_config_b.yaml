@@ -32,7 +32,7 @@ lexus3/os_right/os_driver:
     sensor_frame: 'lexus3/os_right_a'
     lidar_frame: 'lexus3/os_right_a_laser_data_frame'
     imu_frame: 'lexus3/os_right_a_imu_data_frame'
-    use_system_default_qos: true    
+    use_system_default_qos: false    
 lexus3/os_right/os_cloud:
   ros__parameters:
     timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode
@@ -51,7 +51,7 @@ lexus3/os_left/os_driver:
     sensor_frame: 'lexus3/os_left_a'
     lidar_frame: 'lexus3/os_left_a_laser_data_frame'
     imu_frame: 'lexus3/os_left_a_imu_data_frame'
-    use_system_default_qos: true
+    use_system_default_qos: false
 lexus3/os_left/os_cloud:
   ros__parameters:
     timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode    
