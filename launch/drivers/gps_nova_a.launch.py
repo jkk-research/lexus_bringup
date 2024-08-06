@@ -46,7 +46,7 @@ def generate_launch_description():
                     # 'x_coord_offset': -639770.0, # map_zala_0
                     # 'y_coord_offset': -5195040.0, # map_zala_0
                     'z_coord_exact_height': 1.8,
-                    'z_coord_ref_switch': "exact",
+                    'z_coord_ref_switch': "exact", #
                     'tf_frame_id': "map",
                     'tf_child_frame_id': ns_vehicle + "/nova/gps",
                     'utm_frame_id': "map",

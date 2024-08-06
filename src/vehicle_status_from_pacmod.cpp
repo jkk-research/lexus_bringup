@@ -44,7 +44,7 @@ private:
     // Callback for steering wheel messages
     void vehicleSteeringCallback(const pacmod3_msgs::msg::SystemRptFloat &steer_msg)
     {
-        steering_angle = steer_msg.output; // / 14.8;
+        steering_angle = steer_msg.output / 14.8;
     }
 
     // Callback for vehicle speed messages
