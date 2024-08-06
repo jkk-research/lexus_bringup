@@ -46,5 +46,23 @@ def generate_launch_description():
         ],
         namespace=ns_vehicle + node_id,
     )
+    tf_duro_static = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='base_gps_tf_publisher',
+        output='screen',
+        arguments=[
+            '--x',     '-1.542',
+            '--y',     '-0.49',
+            '--z',     '-1.479',
+            '--yaw',   '0.0',
+            '--pitch', '0.0',
+            '--roll',  '0.0',
+
+            '--frame-id',       ns_vehicle + '/' + 'gps',
+            '--child-frame-id', ns_vehicle + '/' + 'base_link'
+        ],
+    )
     ld.add_action(duro_node)
+    ld.add_action(tf_duro_static)
     return ld

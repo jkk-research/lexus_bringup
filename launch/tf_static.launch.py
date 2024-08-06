@@ -1,5 +1,6 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
+import math
 import os
 
 def generate_launch_description():
@@ -60,25 +61,26 @@ def generate_launch_description():
                 '--child-frame-id', ns_vehicle + '/' + 'duro_gps'
             ],
         ),
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            name='base_gps_tf_publisher',
-            output='screen',
-            # https://raw.githubusercontent.com/wiki/szenergy/szenergy-public-resources/img/2022.L.01.svg
-            # TODO
-            arguments=[
-                '--x',     '-1.542',
-                '--y',     '-0.49',
-                '--z',     '-1.479',
-                '--yaw',   '0.0',
-                '--pitch', '0.0',
-                '--roll',  '0.0',
+        ## moved to separate gps launch files TODO: delete
+        # Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     name='base_gps_tf_publisher',
+        #     output='screen',
+        #     # https://raw.githubusercontent.com/wiki/szenergy/szenergy-public-resources/img/2022.L.01.svg
 
-                '--frame-id',       ns_vehicle + '/' + 'gps',
-                '--child-frame-id', ns_vehicle + '/' + 'base_link'
-            ],
-        ),
+        #     arguments=[
+        #         '--x',     '-1.542',
+        #         '--y',     '-0.49',
+        #         '--z',     '-1.479',
+        #         '--yaw',   '0.0',
+        #         '--pitch', '0.0',
+        #         '--roll',  '0.0',
+
+        #         '--frame-id',       ns_vehicle + '/' + 'gps',
+        #         '--child-frame-id', ns_vehicle + '/' + 'base_link'
+        #     ],
+        # ),
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',

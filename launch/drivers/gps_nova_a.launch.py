@@ -3,7 +3,9 @@
 
 
 from launch import LaunchDescription
+from launch_ros.actions import Node
 import launch_ros.actions
+import math
 
 nova_pkg = "novatel_gps_driver"
 ns_vehicle = "lexus3"
@@ -13,6 +15,7 @@ ns_nova = "/gps/nova"
 # -639770.0 -5195040.0 map_zala_0
 
 def generate_launch_description():
+    ld = LaunchDescription()
     container = launch_ros.actions.ComposableNodeContainer(
         name='novatel_gps_container',
         namespace='',
@@ -48,12 +51,33 @@ def generate_launch_description():
                     'z_coord_exact_height': 1.8,
                     'z_coord_ref_switch': "exact", #
                     'tf_frame_id': "map",
-                    'tf_child_frame_id': ns_vehicle + "/nova/gps",
+                    'tf_child_frame_id': ns_vehicle + "/gps",
                     'utm_frame_id': "map",
                 }]
             )
         ],
         output='screen'
     )
+    # https://raw.githubusercontent.com/wiki/szenergy/szenergy-public-resources/img/2022.L.01.svg 
+    tf_nova_static = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='base_gps_tf_publisher',
+        output='screen',
+        arguments=[
+            '--x',    '0.49',
+            '--y',   '-1.542',
+            '--z',   '-1.479',
+            '--yaw',   str(math.pi / 2), # TODO: why is this 90 degrees?
+            '--pitch', '0.0',
+            '--roll',  '0.0',
 
-    return LaunchDescription([container])
+            '--frame-id',       ns_vehicle + '/' + 'gps',
+            '--child-frame-id', ns_vehicle + '/' + 'base_link'
+        ],
+    )
+
+
+    ld.add_action(container)
+    ld.add_action(tf_nova_static)
+    return ld
