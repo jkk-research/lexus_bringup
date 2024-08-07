@@ -2,7 +2,7 @@ from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch_ros.actions import ComposableNodeContainer
+from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction
 
@@ -17,17 +17,28 @@ def generate_launch_description():
     NAMESPACE = "lexus3"
 
     pkg_dir = get_package_share_directory('lexus_bringup')
-    default_params_file = \
-        Path(pkg_dir) / 'launch' / 'drivers' / 'ouster_config_b.yaml'
+    params_file_path = Path(pkg_dir) / 'launch' / 'drivers' / 'ouster_config_b.yaml'
+    merger_params_file_path = Path(pkg_dir) / 'launch' / 'drivers' / 'ouster_config_comp_b.yaml'
+
+
     params_file = LaunchConfiguration('params_file')
-    params_file_arg = DeclareLaunchArgument('params_file',
-                                            default_value=str(
-                                                default_params_file),
-                                            description='name or path to the parameters file to use.')
+    params_file_arg = DeclareLaunchArgument(
+        'params_file',
+        default_value=str(params_file_path),
+        description='Ouster driver parameters.'
+    )
+
+    merger_params_file = LaunchConfiguration('merger_params_file')
+    merger_params_file_arg = DeclareLaunchArgument(
+        'merger_params_file',
+        default_value=str(merger_params_file_path),
+        description='Ouster PCL Merger parameters.'
+    )
 
     ouster_ns = LaunchConfiguration(NAMESPACE)
     ouster_ns_arg = DeclareLaunchArgument(
         'ouster_ns', default_value='lexus3')
+
 
     os_left_sensor = ComposableNode(
         package='ouster_ros',
@@ -65,6 +76,16 @@ def generate_launch_description():
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
+    os_pcl_merger = ComposableNode(
+        package='lexus_bringup',
+        plugin='merger::OusterPCLMerger',
+        # executable from `rclcpp_components_register_node` (CMakeLists.txt)
+        name='os_pcl_merger_node',
+        namespace='lexus3',
+        parameters=[merger_params_file],
+        extra_arguments=[{'use_intra_process_comms': True}],
+    )
+
     os_container = ComposableNodeContainer(
         name='os_container',
         namespace='',
@@ -75,9 +96,19 @@ def generate_launch_description():
             os_right_sensor,
             os_left_cloud,
             os_right_cloud,
+            os_pcl_merger,
         ],
         output='screen',
     )
+
+    # static_transform_publisher = Node(
+    #     package='tf2_ros',
+    #     executable='static_transform_publisher',
+    #     name='static_transform_publisher',
+    #     arguments=['0', '0', '0', '0', '0', '0', '1',
+    #                '0', '3', '0', '0', '0', '0', '1',
+    #                'lexus3/os_left/os_driver', 'lexus3/os_right/os_driver']
+    # )
 
     def invoke_lifecycle_cmd(node_name, verb):
         ros2_exec = FindExecutable(name='ros2')
@@ -93,11 +124,12 @@ def generate_launch_description():
 
     return LaunchDescription([
         params_file_arg,
+        merger_params_file_arg,
         ouster_ns_arg,
         os_container,
         TimerAction(period=2.0, actions=[sensor_left_configure_cmd]),
         TimerAction(period=4.0, actions=[sensor_left_activate_cmd]),
         TimerAction(period=6.0, actions=[sensor_right_configure_cmd]),
         TimerAction(period=8.0, actions=[sensor_right_activate_cmd]),
+        # static_transform_publisher
     ])
-
