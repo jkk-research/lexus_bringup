@@ -21,6 +21,7 @@ find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(rclcpp_components REQUIRED)  # os_pcl_merger_component 
+find_package(pcl_ros REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -38,6 +39,7 @@ set(ament_dependencies
   tf2_ros
   tf2_geometry_msgs
   rclcpp_components
+  pcl_ros
 )
 
 # ==== os_pcl_merger_component ====

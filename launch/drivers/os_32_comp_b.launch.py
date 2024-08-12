@@ -99,6 +99,7 @@ def generate_launch_description():
             os_pcl_merger,
         ],
         output='screen',
+        arguments=['--ros-args', '--log-level', 'INFO'],
     )
 
     # static_transform_publisher = Node(
