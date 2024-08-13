@@ -102,15 +102,6 @@ def generate_launch_description():
         arguments=['--ros-args', '--log-level', 'INFO'],
     )
 
-    # static_transform_publisher = Node(
-    #     package='tf2_ros',
-    #     executable='static_transform_publisher',
-    #     name='static_transform_publisher',
-    #     arguments=['0', '0', '0', '0', '0', '0', '1',
-    #                '0', '3', '0', '0', '0', '0', '1',
-    #                'lexus3/os_left/os_driver', 'lexus3/os_right/os_driver']
-    # )
-
     def invoke_lifecycle_cmd(node_name, verb):
         ros2_exec = FindExecutable(name='ros2')
         return ExecuteProcess(
@@ -132,5 +123,4 @@ def generate_launch_description():
         TimerAction(period=4.0, actions=[sensor_left_activate_cmd]),
         TimerAction(period=6.0, actions=[sensor_right_configure_cmd]),
         TimerAction(period=8.0, actions=[sensor_right_activate_cmd]),
-        # static_transform_publisher
     ])
