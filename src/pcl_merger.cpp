@@ -75,39 +75,12 @@ namespace merger
 
         // callback and other func signatures (and def. temporarily)
         void callbackCommon(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& msg) {
-            RCLCPP_INFO(
-                this->get_logger(), 
-                "Received PointCloud2 message from frame: %s", 
-                msg->header.frame_id.c_str()
-            );
-            RCLCPP_INFO(
-                this->get_logger(),
-                "Message width: %d, height: %d, data size: %lu", 
-                msg->width, msg->height,
-                msg->data.size()
-            );
-
-            if (msg->data.empty()) {
-                RCLCPP_WARN(this->get_logger(), "Received empty point cloud message.");
-                return;
-            }
-
             for (unsigned int i = 0; i < pcl_ptr_list.size(); i++) {
                 pcl::fromROSMsg(*msg, *pcl_ptr_list[i]);
-
-                if (pcl_ptr_list[i]->empty()) {
-                    RCLCPP_WARN(this->get_logger(), "Converted PCL is empty for index: %d", i);
-                    continue;
-                }
-
                 try 
                 {
                     // TODO: skip transform for base frame
                     transform = tf_buffer->lookupTransform(target_frame, msg->header.frame_id, tf2::TimePointZero);
-                    RCLCPP_INFO(
-                        this->get_logger(), 
-                        "Transform found from %s to %s", msg->header.frame_id.c_str(), target_frame.c_str()
-                    );
                     pcl_ros::transformPointCloud(*pcl_ptr_list[i], *pcl_ptr_list[i], transform);
                     pcl_ptr_list[i]->header.frame_id = target_frame;
                 } 
@@ -116,12 +89,6 @@ namespace merger
                     RCLCPP_ERROR(this->get_logger(), "Transform Exception: %s", ex.what());
                     return;
                 }
-
-                RCLCPP_INFO(
-                    this->get_logger(),
-                    "After transform, width: %d, height: %d",
-                    pcl_ptr_list[i]->width, pcl_ptr_list[i]->height
-                );
             }
         }
 
@@ -150,19 +117,18 @@ namespace merger
         }
 
         void mergedPCLPubCallback() {
-            for(unsigned int i = 0; i < pcl_ptr_list.size(); i++){
+            for(unsigned int i = 0; i < pcl_ptr_list.size(); i++) {
                 merged_pcl += *pcl_ptr_list[i];  // TODO: take base point cloud as starting point
                 pcl_ptr_list[i]->clear();
             }
 
-            // check if the merged point cloud is empty
-            if (merged_pcl.empty()) {
-                RCLCPP_WARN(
-                    this->get_logger(),
-                    "Merged point cloud is empty, nothing to publish."
-                );
-                return;
-            }
+            RCLCPP_INFO(
+                this->get_logger(),
+                "After merging - Merged PointCloud: width = %d, height = %d, size = %lu",
+                merged_pcl.width,
+                merged_pcl.height,
+                merged_pcl.points.size()
+            );
 
             merged_pcl.header.frame_id = target_frame;
             pcl::toROSMsg(merged_pcl, merged_pcl_msg);
@@ -192,6 +158,8 @@ namespace merger
             );
 
             pub_ptr->publish(std::move(msg_ptr));
+            // clear the pcl object
+            merged_pcl.clear();
         };
 
         /* Debug function to print out incoming YAML parameters (set at least INFO verbosity in launch file). */
