@@ -74,21 +74,18 @@ namespace merger
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr merged_pcl_pub;
 
         // callback and other func signatures (and def. temporarily)
-        void callbackCommon(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& msg) {
-            for (unsigned int i = 0; i < pcl_ptr_list.size(); i++) {
-                pcl::fromROSMsg(*msg, *pcl_ptr_list[i]);
-                try 
-                {
-                    // TODO: skip transform for base frame
-                    transform = tf_buffer->lookupTransform(target_frame, msg->header.frame_id, tf2::TimePointZero);
-                    pcl_ros::transformPointCloud(*pcl_ptr_list[i], *pcl_ptr_list[i], transform);
-                    pcl_ptr_list[i]->header.frame_id = target_frame;
-                } 
-                catch (const tf2::TransformException& ex) 
-                {
-                    RCLCPP_ERROR(this->get_logger(), "Transform Exception: %s", ex.what());
-                    return;
-                }
+        void callbackCommon(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& msg, int index) {
+            pcl::fromROSMsg(*msg, *pcl_ptr_list[index]);
+            try
+            {
+                transform = tf_buffer->lookupTransform(target_frame, msg->header.frame_id, tf2::TimePointZero);
+                pcl_ros::transformPointCloud(*pcl_ptr_list[index], *pcl_ptr_list[index], transform);
+                pcl_ptr_list[index]->header.frame_id = target_frame;
+            }
+            catch (const tf2::TransformException& ex)
+            {
+                RCLCPP_ERROR(this->get_logger(), "Transform Exception: %s", ex.what());
+                return;
             }
         }
 
@@ -99,23 +96,22 @@ namespace merger
             }
         }
 
-        void initSubscribers() {
-            auto bound_callback_func = std::bind(
-                &OusterPCLMerger::callbackCommon, this, std::placeholders::_1
-            );
-
+        void initSubscribers()
+        {
             for (unsigned int i = 0; i < topic_list.size(); i++) {
                 RCLCPP_INFO(this->get_logger(), "Subscribing to topic: %s", topic_list[i].c_str());
                 sub_list.push_back(
                     this->create_subscription<sensor_msgs::msg::PointCloud2>(
                         topic_list[i],
                         qos,
-                        bound_callback_func
+                        [this, i](const sensor_msgs::msg::PointCloud2::ConstSharedPtr& msg) {
+                            this->callbackCommon(msg, i);
+                        }
                     )
                 );
             }
         }
-
+        
         void mergedPCLPubCallback() {
             for(unsigned int i = 0; i < pcl_ptr_list.size(); i++) {
                 merged_pcl += *pcl_ptr_list[i];  // TODO: take base point cloud as starting point
