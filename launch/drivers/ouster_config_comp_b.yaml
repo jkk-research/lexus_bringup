@@ -1,6 +1,6 @@
 lexus3/os_pcl_merger_node:
   ros__parameters:
-    topics: ["/lexus3/os_left/points","/lexus3/os_right/points"]
+    topics: ["/lexus3/os_left/points","/lexus3/os_right/points", "/lexus3/os_center/points"]
     frames: ["lexus3/os_left_a", "lexus3/os_right_a"]
     child_frames: ["null", "null"]
     target_frame: "lexus3/os_left_a"

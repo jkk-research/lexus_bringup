@@ -17,6 +17,9 @@ lexus3/os_center/os_driver:
 lexus3/os_center/os_cloud:
   ros__parameters:
     timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode
+    sensor_frame: 'lexus3/os_center_a'
+    lidar_frame: 'lexus3/os_center_a_laser_data_frame'
+    imu_frame: 'lexus3/os_center_a_imu_data_frame'
 lexus3/os_right/os_driver:
   ros__parameters:
     sensor_hostname: '192.168.1.102' # 'os-122231000907.local'

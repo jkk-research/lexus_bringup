@@ -78,6 +78,7 @@ namespace merger
             pcl::fromROSMsg(*msg, *pcl_ptr_list[index]);
             try
             {
+                // TODO: do not transform base point cloud
                 transform = tf_buffer->lookupTransform(target_frame, msg->header.frame_id, tf2::TimePointZero);
                 pcl_ros::transformPointCloud(*pcl_ptr_list[index], *pcl_ptr_list[index], transform);
                 pcl_ptr_list[index]->header.frame_id = target_frame;
@@ -96,6 +97,13 @@ namespace merger
             }
         }
 
+        /* 
+         * This function initializes subscribers for each point cloud based on the 
+         * topic_list read from the YAML config file.
+         * Each subscriber is associated with a specific index i in the pcl_ptr_list. 
+         * This ensures that when the callback is triggered, it knows exactly which 
+         * point cloud in pcl_ptr_list to update based on the index i.
+         */
         void initSubscribers()
         {
             for (unsigned int i = 0; i < topic_list.size(); i++) {
@@ -111,14 +119,14 @@ namespace merger
                 );
             }
         }
-        
+
         void mergedPCLPubCallback() {
             for(unsigned int i = 0; i < pcl_ptr_list.size(); i++) {
                 merged_pcl += *pcl_ptr_list[i];  // TODO: take base point cloud as starting point
                 pcl_ptr_list[i]->clear();
             }
 
-            RCLCPP_INFO(
+            RCLCPP_DEBUG(
                 this->get_logger(),
                 "After merging - Merged PointCloud: width = %d, height = %d, size = %lu",
                 merged_pcl.width,

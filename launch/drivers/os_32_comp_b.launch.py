@@ -76,6 +76,24 @@ def generate_launch_description():
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
+    os_center_sensor = ComposableNode(
+        package='ouster_ros',
+        plugin='ouster_ros::OusterSensor',
+        name='os_driver',
+        namespace='lexus3/os_center',
+        parameters=[params_file],
+        extra_arguments=[{'use_intra_process_comms': True}],
+    )
+
+    os_center_cloud = ComposableNode(
+        package='ouster_ros',
+        plugin='ouster_ros::OusterCloud',
+        name='os_cloud',
+        namespace='lexus3/os_center',
+        parameters=[params_file],
+        extra_arguments=[{'use_intra_process_comms': True}],
+    )
+
     os_pcl_merger = ComposableNode(
         package='lexus_bringup',
         plugin='merger::OusterPCLMerger',
@@ -96,6 +114,8 @@ def generate_launch_description():
             os_right_sensor,
             os_left_cloud,
             os_right_cloud,
+            os_center_sensor,
+            os_center_cloud,
             os_pcl_merger,
         ],
         output='screen',
@@ -113,6 +133,9 @@ def generate_launch_description():
     sensor_left_activate_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'activate')
     sensor_right_configure_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'configure')
     sensor_right_activate_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'activate')
+    sensor_right_configure_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'configure')
+    sensor_right_activate_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'activate')
+    
 
     return LaunchDescription([
         params_file_arg,
@@ -123,4 +146,6 @@ def generate_launch_description():
         TimerAction(period=4.0, actions=[sensor_left_activate_cmd]),
         TimerAction(period=6.0, actions=[sensor_right_configure_cmd]),
         TimerAction(period=8.0, actions=[sensor_right_activate_cmd]),
+        TimerAction(period=10.0, actions=[sensor_right_configure_cmd]),
+        TimerAction(period=12.0, actions=[sensor_right_activate_cmd]),
     ])
