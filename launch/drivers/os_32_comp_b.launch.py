@@ -133,8 +133,8 @@ def generate_launch_description():
     sensor_left_activate_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'activate')
     sensor_right_configure_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'configure')
     sensor_right_activate_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'activate')
-    sensor_right_configure_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'configure')
-    sensor_right_activate_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'activate')
+    sensor_center_configure_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'configure')
+    sensor_center_activate_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'activate')
     
 
     return LaunchDescription([
@@ -146,6 +146,6 @@ def generate_launch_description():
         TimerAction(period=4.0, actions=[sensor_left_activate_cmd]),
         TimerAction(period=6.0, actions=[sensor_right_configure_cmd]),
         TimerAction(period=8.0, actions=[sensor_right_activate_cmd]),
-        TimerAction(period=10.0, actions=[sensor_right_configure_cmd]),
-        TimerAction(period=12.0, actions=[sensor_right_activate_cmd]),
+        TimerAction(period=10.0, actions=[sensor_center_configure_cmd]),
+        TimerAction(period=12.0, actions=[sensor_center_activate_cmd]),
     ])
