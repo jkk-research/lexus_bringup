@@ -100,3 +100,13 @@ git checkout ros2_master
 cd ~/ros2_ws
 colcon build --packages-select avt_vimba_camera
 ```
+
+## Build some important packages
+
+``` bash
+colcon build --symlink-install --packages-select arj_simple_perception demo_jkk duro_gps_driver gui_lexus gui_teleop kalman_pos kiss_icp lexus_bringup lidar_cluster mcap_rec mpc_camera_driver mpc_controller novatel_gps_driver novatel_gps_msgs ouster_msgs ouster_ros ouster_sensor_msgs pacmod_extender patchworkpp pointcloud_manager pose_repub rviz_markers time_utils timing_benchmark wayp_plan_tools 
+```
+
+``` bash
+colcon list 
+```
