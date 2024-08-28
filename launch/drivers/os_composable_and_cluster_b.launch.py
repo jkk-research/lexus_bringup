@@ -104,14 +104,13 @@ def generate_launch_description():
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
-    ground_filter = ComposableNode(
+    ground_segment = ComposableNode(
         package='patchworkpp',
-        name='ground_filter_patchworkpp',
-        executable='demo',
+        plugin='patchworkpp::PatchworkppPointXYZI',
         name='ground_segmentation',
-        output='screen',
+        # namespace='lexus3/os_left',
         parameters=[
-            {'cloud_topic': '/lexus3/os_center/points'}, # Input pointcloud /lexus3/merged_points
+            {'cloud_topic': '/lexus3/os_center/points'}, # Input pointcloud
             {'frame_id': 'lexus3/os_center_a_laser_data_frame'},
             {'sensor_height': 1.88},
             {'num_iter': 3},             # Number of iterations for ground plane estimation using PCA.
@@ -127,6 +126,7 @@ def generate_launch_description():
             {'verbose': False},          # display verbose info
             {'display_time': False},     # display running_time and pointcloud sizes
         ],
+        extra_arguments=[{'use_intra_process_comms': True}],
     )
     os_container = ComposableNodeContainer(
         name='os_container',
@@ -141,7 +141,7 @@ def generate_launch_description():
             os_center_sensor,
             os_center_cloud,
             os_pcl_merger,
-            ground_filter,
+            ground_segment,
         ],
         output='screen',
         arguments=['--ros-args', '--log-level', 'INFO'],
