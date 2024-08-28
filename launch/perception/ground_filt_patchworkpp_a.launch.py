@@ -25,7 +25,7 @@ def generate_launch_description():
             parameters=[
                 # {'cloud_topic': '/lexus3/merged_points'}, # Input pointcloud
                 {'cloud_topic': '/lexus3/merged_points'}, # Input pointcloud
-                {'frame_id': 'lexus3/os_center_a'},
+                {'frame_id': 'lexus3/os_center_a'}, # or lexus3/os_center_a_laser_data_frame
                 {'sensor_height': 1.88},
                 {'num_iter': 3},             # Number of iterations for ground plane estimation using PCA.
                 {'num_lpr': 20},             # Maximum number of points to be selected as lowest points representative.

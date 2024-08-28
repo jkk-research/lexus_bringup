@@ -7,7 +7,7 @@ from launch_ros.descriptions import ComposableNode
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction
 
 from launch.substitutions import LaunchConfiguration, FindExecutable
-from launch_ros.actions import PushRosNamespace
+# from launch_ros.actions import PushRosNamespace
 
 def generate_launch_description():
     """
