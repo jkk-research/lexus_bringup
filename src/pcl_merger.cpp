@@ -47,7 +47,7 @@ namespace merger
             initPointCloudPtrList();
 
             // subscriber and publisher declarations
-            timer_pub = this->create_wall_timer(50ms, std::bind(&OusterPCLMerger::mergedPCLPubCallback, this));
+            timer_pub = this->create_wall_timer(50ms, std::bind(&OusterPCLMerger::mergedPCLPubCallback, this)); // TODO: this is fix 20 hz, make it param https://github.com/jkk-research/lexus_bringup/issues/15
             initSubscribers();
             this->merged_pcl_pub = this->create_publisher<sensor_msgs::msg::PointCloud2>(pub_topic_name, 1);
         }
