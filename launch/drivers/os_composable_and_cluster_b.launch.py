@@ -99,7 +99,7 @@ def generate_launch_description():
         plugin='merger::OusterPCLMerger',
         # executable from `rclcpp_components_register_node` (CMakeLists.txt)
         name='os_pcl_merger_node',
-        namespace='lexus3',
+        namespace='', 
         parameters=[merger_params_file],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
@@ -110,7 +110,7 @@ def generate_launch_description():
         name='ground_segmentation',
         # namespace='lexus3/os_left',
         parameters=[
-            {'cloud_topic': '/lexus3/os_center/points'}, # Input pointcloud
+            {'cloud_topic': '/lexus3/merged_points'}, # Input pointcloud
             {'frame_id': 'lexus3/os_center_a_laser_data_frame'},
             {'sensor_height': 1.88},
             {'num_iter': 3},             # Number of iterations for ground plane estimation using PCA.

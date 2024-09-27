@@ -4,4 +4,5 @@ lexus3/os_pcl_merger_node:
     frames: ["lexus3/os_left_a", "lexus3/os_right_a", "lexus3/os_center_a"]
     child_frames: ["null", "null"]
     target_frame: "lexus3/os_center_a"
-    pub_topic_name: "merged_points"
+    pub_topic_name: "sensing/lidar/concatenated/pointcloud"
+    # pub_topic_name: "merged_points"
