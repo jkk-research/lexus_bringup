@@ -5,6 +5,17 @@ using namespace std::chrono_literals;
 
 namespace merger
 {
+    
+    struct CropBox 
+    {
+        float min_x;
+        float min_y;
+        float min_z;
+        float max_x;
+        float max_y;
+        float max_z;
+    };
+
     class OusterPCLMerger : public rclcpp::Node
     {
     public:
@@ -29,12 +40,52 @@ namespace merger
             this->declare_parameter(
                 "pub_topic_name", ""
             );
+            this->declare_parameter(
+                "merger_freq", 20.0
+            );
+
+            // CropBox parameters
+            this->declare_parameter("crop_box.min_x", 0.0f);
+            this->declare_parameter("crop_box.min_y", 0.0f);
+            this->declare_parameter("crop_box.min_z", 0.0f);
+            this->declare_parameter("crop_box.max_x", 0.0f);
+            this->declare_parameter("crop_box.max_y", 0.0f);
+            this->declare_parameter("crop_box.max_z", 0.0f);
+            this->declare_parameter("crop_box.negative", true); // enables cropping inside the box
+            this->declare_parameter("crop_box.apply", false);
+
 
             topic_list = this->get_parameter("topics").as_string_array();
             frame_list = this->get_parameter("frames").as_string_array();
             child_frame_list = this->get_parameter("child_frames").as_string_array();
             target_frame = this->get_parameter("target_frame").as_string();
             pub_topic_name = this->get_parameter("pub_topic_name").as_string();
+            merger_freq = this->get_parameter("merger_freq").as_double();
+
+            crop_box = getCropBoxParameters();
+            crop_box_negative = this->get_parameter("crop_box.negative").as_bool();
+            crop_box_apply = this->get_parameter("crop_box.apply").as_bool();
+            
+
+            // validate parameters
+            if (crop_box.min_x > crop_box.max_x ||
+                crop_box.min_y > crop_box.max_y ||
+                crop_box.min_z > crop_box.max_z) {
+                RCLCPP_ERROR(
+                    this->get_logger(), 
+                    "Invalid CropBox parameters: min values must be less than max values."
+                );
+                throw std::runtime_error("Invalid CropBox parameters");
+            }
+
+            if (merger_freq <= 0.0) {
+                RCLCPP_WARN(
+                    this->get_logger(),
+                    "Invalid merger_frequency (%f). Setting to default 20 Hz.",
+                    merger_freq
+                );
+                merger_freq = 20.0;
+            }
 
             // checking parameters (topics) - only active with DEBUG verbosity
             RCLCPP_DEBUG(this->get_logger(), "Logging parameters:");
@@ -47,7 +98,12 @@ namespace merger
             initPointCloudPtrList();
 
             // subscriber and publisher declarations
-            timer_pub = this->create_wall_timer(50ms, std::bind(&OusterPCLMerger::mergedPCLPubCallback, this)); // TODO: this is fix 20 hz, make it param https://github.com/jkk-research/lexus_bringup/issues/15
+            auto timer_period = std::chrono::duration<double>(1.0 / merger_freq);
+            timer_pub = this->create_wall_timer(
+                std::chrono::duration_cast<std::chrono::milliseconds>(timer_period),
+                std::bind(&OusterPCLMerger::mergedPCLPubCallback, this)
+            );
+
             initSubscribers();
             this->merged_pcl_pub = this->create_publisher<sensor_msgs::msg::PointCloud2>(pub_topic_name, 1);
         }
@@ -72,6 +128,13 @@ namespace merger
         rclcpp::TimerBase::SharedPtr timer_pub;
         std::vector<rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr> sub_list;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr merged_pcl_pub;
+        double merger_freq;
+
+        // crop box parameters
+        bool crop_box_apply;
+        CropBox crop_box;
+        bool crop_box_negative;
+        pcl::CropBox<pcl::PointXYZI> crop;
 
         // callback and other func signatures (and def. temporarily)
         void callbackCommon(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& msg, int index) {
@@ -81,6 +144,17 @@ namespace merger
                 // TODO: do not transform base point cloud
                 transform = tf_buffer->lookupTransform(target_frame, msg->header.frame_id, tf2::TimePointZero);
                 pcl_ros::transformPointCloud(*pcl_ptr_list[index], *pcl_ptr_list[index], transform);
+
+                // apply crop box filter
+                if (crop_box_apply) {
+                    crop.setInputCloud(pcl_ptr_list[index]);
+                    crop.setMin(Eigen::Vector4f(crop_box.min_x, crop_box.min_y, crop_box.min_z, 1.0));
+                    crop.setMax(Eigen::Vector4f(crop_box.max_x, crop_box.max_y, crop_box.max_z, 1.0));
+                    crop.setNegative(crop_box_negative);
+                    crop.filter(*pcl_ptr_list[index]);
+                }
+
+                // update the frame_id (after transformation)
                 pcl_ptr_list[index]->header.frame_id = target_frame;
             }
             catch (const tf2::TransformException& ex)
@@ -180,6 +254,17 @@ namespace merger
             }
             list_str += "]";
             return parameter_name + ": " + list_str;
+        }
+
+        CropBox getCropBoxParameters() {
+            CropBox box;
+            box.min_x = this->get_parameter("crop_box.min_x").as_double();
+            box.min_y = this->get_parameter("crop_box.min_y").as_double();
+            box.min_z = this->get_parameter("crop_box.min_z").as_double();
+            box.max_x = this->get_parameter("crop_box.max_x").as_double();
+            box.max_y = this->get_parameter("crop_box.max_y").as_double();
+            box.max_z = this->get_parameter("crop_box.max_z").as_double();
+            return box;
         }
     };
 }
