@@ -51,10 +51,10 @@ public:
     CurrentPoseFromTf() : Node("current_pose_from_tf_node")
     {
 
-        this->declare_parameter<float>("output_topic", output_topic); 
+        this->declare_parameter<std::string>("output_topic", output_topic_); 
         this->declare_parameter<std::string>("frame_id", frame_id_);
         this->declare_parameter<std::string>("child_frame_id", child_frame_id_);
-        this->get_parameter("output_topic", output_topic);
+        this->get_parameter("output_topic", output_topic_);
         this->get_parameter("frame_id", frame_id_);
         this->get_parameter("child_frame_id", child_frame_id_);        
 
@@ -63,7 +63,7 @@ public:
         // Call timer_callback function 50 milliseconds
         callback_handle_ = this->add_on_set_parameters_callback(std::bind(&CurrentPoseFromTf::parametersCallback, this, std::placeholders::_1));
         timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&CurrentPoseFromTf::timer_callback, this));
-        pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(output_topic, 10);
+        pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(output_topic_, 10);
         RCLCPP_INFO_STREAM(this->get_logger(), "current_pose_from_tf node started");
     }
 
@@ -101,7 +101,7 @@ private:
         getTransform();
     }
  
-
+    std::string output_topic_ = "current_pose";
     OnSetParametersCallbackHandle::SharedPtr callback_handle_;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
