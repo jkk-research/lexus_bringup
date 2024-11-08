@@ -8,12 +8,12 @@ namespace merger
     
     struct CropBox 
     {
-        float min_x;
-        float min_y;
-        float min_z;
-        float max_x;
-        float max_y;
-        float max_z;
+        double min_x;
+        double min_y;
+        double min_z;
+        double max_x;
+        double max_y;
+        double max_z;
     };
 
     class OusterPCLMerger : public rclcpp::Node
@@ -65,7 +65,7 @@ namespace merger
             crop_box = getCropBoxParameters();
             crop_box_negative = this->get_parameter("crop_box.negative").as_bool();
             crop_box_apply = this->get_parameter("crop_box.apply").as_bool();
-            
+
 
             // validate parameters
             if (crop_box.min_x > crop_box.max_x ||

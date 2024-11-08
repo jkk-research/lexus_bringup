@@ -5,7 +5,6 @@ lexus3/os_pcl_merger_node:
     child_frames: ["null", "null"]
     target_frame: "lexus3/os_center_a"
     pub_topic_name: "sensing/lidar/concatenated/pointcloud"
-    # pub_topic_name: "merged_points"
     merger_freq: 20.0
 
     # ------------------------------
@@ -32,19 +31,3 @@ lexus3/os_pcl_merger_node:
       negative: true  # Set to true to invert the CropBox filter, filtering points inside the defined box.
       
       apply: true     # Set to true to apply the filter (on / off switch)
-
-    # # test box
-    # crop_box:
-    #   # Define the minimum boundaries of the CropBox (meters)
-    #   min_x: -0.5    # Exclude points with X < -0.5 (behind the test box)
-    #   min_y: -0.5    # Exclude points with Y < -0.5 (to the right of the test box)
-    #   min_z: -0.5    # Exclude points with Z < -0.5 (below the test box)
-      
-    #   # Define the maximum boundaries of the CropBox (meters)
-    #   max_x: 0.5     # Exclude points with X > 0.5 (in front of the test box)
-    #   max_y: 0.5     # Exclude points with Y > 0.5 (to the left of the test box)
-    #   max_z: 0.5     # Exclude points with Z > 0.5 (above the test box)
-      
-    #   negative: true # Set to true to invert the CropBox filter, excluding points inside the box
-    #   apply: true     # Set to true to apply the filter (on / off switch)
-    
