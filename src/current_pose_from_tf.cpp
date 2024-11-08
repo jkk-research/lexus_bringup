@@ -8,7 +8,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rcl_interfaces/msg/set_parameters_result.hpp"
 
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_ros/transform_listener.h"
@@ -19,51 +18,14 @@ using std::placeholders::_1;
 
 class CurrentPoseFromTf : public rclcpp::Node
 {
- rcl_interfaces::msg::SetParametersResult parametersCallback(const std::vector<rclcpp::Parameter> &parameters)
-  {
-    rcl_interfaces::msg::SetParametersResult result;
-    result.successful = true;
-    result.reason = "success";
-    for (const auto &param : parameters)
-    {
-      RCLCPP_INFO_STREAM(this->get_logger(), "Param update: " << param.get_name().c_str() << ": " << param.value_to_string().c_str());
-      if (param.get_name() == "frame_id")
-      {
-        frame_id_ = param.as_string();
-      }
-      else if (param.get_name() == "child_frame_id")
-      {
-        child_frame_id_ = param.as_string();
-      }
-      else if (param.get_name() == "output_topic")
-      {
-        output_topic_ = param.as_string();
-      }
-     
-
-    }
-    return result;
-  }
-
-
-
 public:
     CurrentPoseFromTf() : Node("current_pose_from_tf_node")
     {
-
-        this->declare_parameter<std::string>("output_topic", output_topic_); 
-        this->declare_parameter<std::string>("frame_id", frame_id_);
-        this->declare_parameter<std::string>("child_frame_id", child_frame_id_);
-        this->get_parameter("output_topic", output_topic_);
-        this->get_parameter("frame_id", frame_id_);
-        this->get_parameter("child_frame_id", child_frame_id_);        
-
         tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
         tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
         // Call timer_callback function 50 milliseconds
-        callback_handle_ = this->add_on_set_parameters_callback(std::bind(&CurrentPoseFromTf::parametersCallback, this, std::placeholders::_1));
         timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&CurrentPoseFromTf::timer_callback, this));
-        pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(output_topic_, 10);
+        pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/current_pose", 10);
         RCLCPP_INFO_STREAM(this->get_logger(), "current_pose_from_tf node started");
     }
 
@@ -101,8 +63,6 @@ private:
         getTransform();
     }
  
-    std::string output_topic_ = "current_pose";
-    OnSetParametersCallbackHandle::SharedPtr callback_handle_;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
