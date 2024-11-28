@@ -19,14 +19,14 @@ lexus3/os_pcl_merger_node:
     # assuming right-handed coordinate system (X: forward, Y: left, Z: up)
     crop_box:
       # minimum boundaries of the CropBox (meters)
-      min_x: -2.35    # Points with X < "val" will be excluded. (half of the vehicle's length backward)
+      min_x: -1.50    # Points with X < "val" will be excluded. (half of the vehicle's length backward)
       min_y: -0.95    # Points with Y < "val" will be excluded. (half of the vehicle's width to the right)
-      min_z: -0.85    # Points with Z < "val" will be excluded. (slightly below the ground to account for any mounting height)
+      min_z: -2.43    # Points with Z < "val" will be excluded. (slightly below the ground to account for any mounting height)
       
       # maximum boundaries of the CropBox (meters)
-      max_x: 2.35     # Points with X > "val" will be excluded. (half of the vehicle's length forward)
+      max_x: 3.50     # Points with X > "val" will be excluded. (half of the vehicle's length forward)
       max_y: 0.95     # Points with Y > "val" will be excluded. (half of the vehicle's width to the left)
-      max_z: 0.85     # Points with Z > "val" will be excluded. (slightly above the vehicle to account for the roof and mounting height)
+      max_z: 0.20     # Points with Z > "val" will be excluded. (slightly above the vehicle to account for the roof and mounting height)
       
       negative: true  # Set to true to invert the CropBox filter, filtering points inside the defined box.
       
