@@ -4,7 +4,7 @@ lexus3/os_center/os_driver:
     udp_dest: '192.168.10.5'
     mtp_dest: ''
     mtp_main: false
-    lidar_mode: '1024x20'
+    lidar_mode: '1024x10'
     timestamp_mode: 'TIME_FROM_ROS_TIME'
     udp_profile_lidar: 'RNG19_RFL8_SIG16_NIR16'
     metadata: ''
@@ -26,7 +26,7 @@ lexus3/os_right/os_driver:
     udp_dest: '192.168.10.5'
     mtp_dest: ''
     mtp_main: false
-    lidar_mode: '1024x20'
+    lidar_mode: '1024x10'
     timestamp_mode: 'TIME_FROM_ROS_TIME'
     udp_profile_lidar: 'RNG19_RFL8_SIG16_NIR16'
     metadata: ''
@@ -48,7 +48,7 @@ lexus3/os_left/os_driver:
     udp_dest: '192.168.10.5'
     mtp_dest: ''
     mtp_main: false
-    lidar_mode: '1024x20'
+    lidar_mode: '1024x10'
     timestamp_mode: 'TIME_FROM_ROS_TIME'
     udp_profile_lidar: 'RNG19_RFL8_SIG16_NIR16'
     metadata: ''
