@@ -50,6 +50,9 @@ qtcreator-*
 # Catkin custom files
 CATKIN_IGNORE
 
+# ouster metadata json
+*metadata.json
+
 
 # vs code 
 .vscode/**
