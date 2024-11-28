@@ -19,6 +19,10 @@ def generate_launch_description():
                 {'points_in_topic': LaunchConfiguration("topic")},
                 {'points_out_topic': 'clustered_points'},
                 {'marker_out_topic': 'clustered_marker'},
+                {'tolerance': 2.0},
+                {'max_cluster_size': 4000},
+                {'voxel_leaf_size': 4.0},
+                {'min_points_number_per_voxel': 5},
                 {'verbose1': True},
                 {'verbose2': True},
             ]
