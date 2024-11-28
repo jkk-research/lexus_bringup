@@ -24,6 +24,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/common/transforms.h>
 #include <pcl_ros/transforms.hpp>
+#include <pcl/filters/crop_box.h>
 
 // put function signatures here
 
