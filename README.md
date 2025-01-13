@@ -88,7 +88,7 @@ colcon build --packages-select gui_lexus
 ## CAN - PACMod3 - Kvaser install
 
 - [Install Pacmod3](https://github.com/astuff/pacmod3#installation)
-- [Install Kvaser](https://www.kvaser.com/canlib-webhelp/section_install_linux.html)
+- [Install Kvaser](https://www.kvaser.com/canlib-webhelp/section_install_linux.htm)
 - [Install Kvaser ROS Interface](https://github.com/astuff/kvaser_interface#installation)
 
 ## Mako install 
