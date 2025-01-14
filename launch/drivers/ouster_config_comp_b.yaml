@@ -31,3 +31,37 @@ lexus3/os_pcl_merger_node:
       negative: true  # Set to true to invert the CropBox filter, filtering points inside the defined box.
       
       apply: true     # Set to true to apply the filter (on / off switch)
+# Autoware version of the above snippet, without the 'lexus3' namespace:
+os_pcl_merger_node:
+  ros__parameters:
+    topics: ["/lexus3/os_left/points","/lexus3/os_right/points", "/lexus3/os_center/points"]
+    frames: ["lexus3/os_left_a", "lexus3/os_right_a", "lexus3/os_center_a"]
+    child_frames: ["null", "null"]
+    target_frame: "lexus3/os_center_a"
+    pub_topic_name: "sensing/lidar/concatenated/pointcloud"
+    merger_freq: 10.0
+
+    # ------------------------------
+    # CropBox Filter Parameters
+    # ------------------------------
+
+    # Lexus RX450h dimensions:
+    # Length: ~4.7 meters (4700 mm)
+    # Width: ~1.9 meters (1900 mm)
+    # Height: ~1.7 meters (1700 mm)
+
+    # assuming right-handed coordinate system (X: forward, Y: left, Z: up)
+    crop_box:
+      # minimum boundaries of the CropBox (meters)
+      min_x: -1.50    # Points with X < "val" will be excluded. (half of the vehicle's length backward)
+      min_y: -0.95    # Points with Y < "val" will be excluded. (half of the vehicle's width to the right)
+      min_z: -2.43    # Points with Z < "val" will be excluded. (slightly below the ground to account for any mounting height)
+      
+      # maximum boundaries of the CropBox (meters)
+      max_x: 3.50     # Points with X > "val" will be excluded. (half of the vehicle's length forward)
+      max_y: 0.95     # Points with Y > "val" will be excluded. (half of the vehicle's width to the left)
+      max_z: 0.20     # Points with Z > "val" will be excluded. (slightly above the vehicle to account for the roof and mounting height)
+      
+      negative: true  # Set to true to invert the CropBox filter, filtering points inside the defined box.
+      
+      apply: true     # Set to true to apply the filter (on / off switch)

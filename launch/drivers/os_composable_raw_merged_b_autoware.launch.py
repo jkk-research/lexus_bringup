@@ -45,7 +45,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='os_left',
+        namespace='lexus3/os_left',
         parameters=[params_file],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
@@ -54,7 +54,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterCloud',
         name='os_cloud',
-        namespace='os_left',
+        namespace='lexus3/os_left',
         parameters=[params_file],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
@@ -63,7 +63,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='os_right',
+        namespace='lexus3/os_right',
         parameters=[params_file],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
@@ -72,7 +72,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterCloud',
         name='os_cloud',
-        namespace='os_right',
+        namespace='lexus3/os_right',
         parameters=[params_file],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
@@ -81,7 +81,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='os_center',
+        namespace='lexus3/os_center',
         parameters=[params_file],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
@@ -90,7 +90,7 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterCloud',
         name='os_cloud',
-        namespace='os_center',
+        namespace='lexus3/os_center',
         parameters=[params_file],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
@@ -130,12 +130,12 @@ def generate_launch_description():
             shell=True
         )
 
-    sensor_left_configure_cmd = invoke_lifecycle_cmd('os_left/os_driver', 'configure')
-    sensor_left_activate_cmd = invoke_lifecycle_cmd('os_left/os_driver', 'activate')
-    sensor_right_configure_cmd = invoke_lifecycle_cmd('os_right/os_driver', 'configure')
-    sensor_right_activate_cmd = invoke_lifecycle_cmd('os_right/os_driver', 'activate')
-    sensor_center_configure_cmd = invoke_lifecycle_cmd('os_center/os_driver', 'configure')
-    sensor_center_activate_cmd = invoke_lifecycle_cmd('os_center/os_driver', 'activate')
+    sensor_left_configure_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'configure')
+    sensor_left_activate_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'activate')
+    sensor_right_configure_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'configure')
+    sensor_right_activate_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'activate')
+    sensor_center_configure_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'configure')
+    sensor_center_activate_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'activate')
     
 
     return LaunchDescription([
