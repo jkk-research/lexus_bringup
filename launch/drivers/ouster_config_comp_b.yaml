@@ -34,10 +34,10 @@ lexus3/os_pcl_merger_node:
 # Autoware version of the above snippet, without the 'lexus3' namespace:
 os_pcl_merger_node:
   ros__parameters:
-    topics: ["/lexus3/os_left/points","/lexus3/os_right/points", "/lexus3/os_center/points"]
-    frames: ["lexus3/os_left_a", "lexus3/os_right_a", "lexus3/os_center_a"]
+    topics: ["/os_left/points","/os_right/points", "/os_center/points"]
+    frames: ["os_left_a", "os_right_a", "os_center_a"]
     child_frames: ["null", "null"]
-    target_frame: "lexus3/os_center_a"
+    target_frame: "os_center_a_base_link"
     pub_topic_name: "sensing/lidar/concatenated/pointcloud"
     merger_freq: 10.0
 
