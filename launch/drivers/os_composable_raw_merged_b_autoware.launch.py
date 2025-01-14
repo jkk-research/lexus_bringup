@@ -40,7 +40,7 @@ def generate_launch_description():
     namespace_enabled = LaunchConfiguration('namespace_enabled')
     namespace_enabled_arg = DeclareLaunchArgument(
         'namespace_enabled',
-        default_value='true',
+        default_value='false',
         description='Enable or disable namespace usage.'
     )
 
