@@ -88,6 +88,9 @@ def generate_launch_description():
         name='os_cloud',
         namespace='os_center',
         parameters=[params_file],
+        remappings=[
+            ('/os_center/points', '/sensing/lidar/concatenated/pointcloud'), # temporary, TODO: remove and use the proper concatenation instead
+        ],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
     
