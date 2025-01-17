@@ -37,7 +37,7 @@ os_pcl_merger_node:
     topics: ["/os_left/points","/os_right/points", "/os_center/points"]
     frames: ["os_left_a", "os_right_a", "os_center_a"]
     child_frames: ["null", "null"]
-    target_frame: "os_center_a_base_link"
+    target_frame: "os_center_a"
     pub_topic_name: "sensing/lidar/concatenated/pointcloud"
     merger_freq: 10.0
 

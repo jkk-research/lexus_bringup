@@ -15,7 +15,6 @@ def generate_launch_description():
     process/container.
     """
     
-    NAMESPACE = "lexus3"  # not used currently (TODO: make this dynamic)
 
     pkg_dir = get_package_share_directory('lexus_bringup')
     params_file_path = Path(pkg_dir) / 'launch' / 'drivers' / 'ouster_config_b.yaml'
@@ -36,9 +35,6 @@ def generate_launch_description():
         description='Ouster PCL Merger parameters.'
     )
 
-    ouster_ns = LaunchConfiguration(NAMESPACE)
-    ouster_ns_arg = DeclareLaunchArgument(
-        'ouster_ns', default_value='lexus3')
 
 
     os_left_sensor = ComposableNode(
