@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(pacmod3_msgs REQUIRED)
+find_package(novatel_oem7_msgs REQUIRED) # for novatel_oem7_msgs::msg might be temporary
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
@@ -31,6 +32,7 @@ set(ament_dependencies
   rclcpp
   std_msgs
   pacmod3_msgs
+  novatel_oem7_msgs # for novatel_oem7_msgs::msg might be temporary
   geometry_msgs
   nav_msgs
   visualization_msgs
@@ -60,6 +62,8 @@ add_executable(odom src/odom.cpp)
 ament_target_dependencies(odom ${ament_dependencies}) 
 add_executable(vehicle_status_from_pacmod src/vehicle_status_from_pacmod.cpp)
 ament_target_dependencies(vehicle_status_from_pacmod ${ament_dependencies})
+add_executable(nova_oem7_to_tf src/nova_oem7_to_tf.cpp)
+ament_target_dependencies(nova_oem7_to_tf ${ament_dependencies}) ## might be temporary
 
 
 if(BUILD_TESTING)
@@ -91,6 +95,7 @@ install(TARGETS
   current_pose_from_tf
   vehicle_status_from_pacmod
   odom
+  nova_oem7_to_tf
   DESTINATION lib/${PROJECT_NAME})
 
   # ==== os_pcl_merger_component ====

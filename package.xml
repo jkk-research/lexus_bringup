@@ -18,6 +18,7 @@
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>pacmod3_msgs</depend>
+  <depend>novatel_oem7_msgs</depend> <!-- for novatel_gps_driver ## might be temporary -->
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>visualization_msgs</depend>

@@ -88,9 +88,9 @@ def generate_launch_description():
         name='os_cloud',
         namespace='os_center',
         parameters=[params_file],
-        remappings=[
-            ('/os_center/points', '/sensing/lidar/concatenated/pointcloud'), # temporary, TODO: remove and use the proper concatenation instead
-        ],
+        # remappings=[
+        #     ('/os_center/points', '/sensing/lidar/concatenated/pointcloud'), # temporary, TODO: remove and use the proper concatenation instead
+        # ],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
     
@@ -116,7 +116,7 @@ def generate_launch_description():
             os_right_cloud,
             os_center_sensor,
             os_center_cloud,
-            os_pcl_merger,
+            # os_pcl_merger, # TODO:
         ],
         output='screen',
         arguments=['--ros-args', '--log-level', 'INFO'],
