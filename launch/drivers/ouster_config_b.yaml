@@ -22,7 +22,7 @@ lexus3/os_center/os_cloud:
     imu_frame: 'lexus3/os_center_a_imu_data_frame'
 lexus3/os_right/os_driver:
   ros__parameters:
-    sensor_hostname: '192.168.10.21' # 'os-122231000907.local'
+    sensor_hostname: '192.168.10.21' #'os-122231000907.local'
     udp_dest: '192.168.10.5'
     mtp_dest: ''
     mtp_main: false
@@ -30,8 +30,8 @@ lexus3/os_right/os_driver:
     timestamp_mode: 'TIME_FROM_ROS_TIME'
     udp_profile_lidar: 'RNG19_RFL8_SIG16_NIR16'
     metadata: ''
-    lidar_port: 7503
-    imu_port: 7502
+    lidar_port: 7508
+    imu_port: 7509
     sensor_frame: 'lexus3/os_right_a'
     lidar_frame: 'lexus3/os_right_a_laser_data_frame'
     imu_frame: 'lexus3/os_right_a_imu_data_frame'
@@ -64,92 +64,3 @@ lexus3/os_left/os_cloud:
     sensor_frame: 'lexus3/os_left_a'
     lidar_frame: 'lexus3/os_left_a_laser_data_frame'
     imu_frame: 'lexus3/os_left_a_imu_data_frame'
-# Autoware version of the above snippet, without the 'lexus3' namespace:
-os_center/os_driver:
-  ros__parameters:
-    sensor_hostname: '192.168.10.20' # 'os-992219000350.local'
-    udp_dest: '192.168.10.5'
-    mtp_dest: ''
-    mtp_main: false
-    lidar_mode: '1024x10'
-    timestamp_mode: 'TIME_FROM_ROS_TIME'
-    udp_profile_lidar: 'RNG19_RFL8_SIG16_NIR16'
-    metadata: ''
-    lidar_port: 7505
-    imu_port: 7504
-    sensor_frame: 'os_center_a'
-    lidar_frame: 'os_center_a_laser_data_frame'
-    imu_frame: 'os_center_a_imu_data_frame'
-    use_system_default_qos: false # better stay false, but DLIO works only with true
-os_center/os_cloud:
-  ros__parameters:
-    timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode
-    sensor_frame: 'os_center_a'
-    lidar_frame: 'os_center_a_laser_data_frame'
-    imu_frame: 'os_center_a_imu_data_frame'
-    point_type: 'xyzirc'
-    # point_type[optional]: choose from: {original, native, xyz, xyzi, xyzir}
-    # Here is a breif description of each option:
-    #  - original: This uses the original point representation ouster_ros::Point
-    #          of the ouster-ros driver.
-    #  - native: directly maps all fields as published by the sensor to an
-    #          equivalent point cloud representation with the additon of ring
-    #          and timestamp fields.
-    #  - xyz: the simplest point type, only has {x, y, z}
-    #  - xyzi: same as xyz point type but adds intensity (signal) field. this
-    #          type is not compatible with the low data profile.
-    #  - xyzir: same as xyzi type but adds ring (channel) field.
-    #          this type is same as Velodyne point cloud type
-    #          this type is not compatible with the low data profile.
-    # - xyzirc: autoware specific point type, note that r is return_type and c is channel here
-    # for more details about the fields of each point type and their data refer
-    # to the following header files:
-    # - ouster_ros/os_point.h
-    # - ouster_ros/sensor_point_types.h
-    # - ouster_ros/common_point_types.h.
-os_right/os_driver:
-  ros__parameters:
-    sensor_hostname: '192.168.10.21' # 'os-122231000907.local'
-    udp_dest: '192.168.10.5'
-    mtp_dest: ''
-    mtp_main: false
-    lidar_mode: '1024x10'
-    timestamp_mode: 'TIME_FROM_ROS_TIME'
-    udp_profile_lidar: 'RNG19_RFL8_SIG16_NIR16'
-    metadata: ''
-    lidar_port: 7503
-    imu_port: 7502
-    sensor_frame: 'os_right_a'
-    lidar_frame: 'os_right_a_laser_data_frame'
-    imu_frame: 'os_right_a_imu_data_frame'
-    use_system_default_qos: false    
-os_right/os_cloud:
-  ros__parameters:
-    timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode
-    sensor_frame: 'os_right_a'
-    lidar_frame: 'os_right_a_laser_data_frame'
-    imu_frame: 'os_right_a_imu_data_frame'
-    point_type: 'xyzirc'
-os_left/os_driver:
-  ros__parameters:
-    sensor_hostname: '192.168.10.22' # 'os-122227001628.local'
-    udp_dest: '192.168.10.5'
-    mtp_dest: ''
-    mtp_main: false
-    lidar_mode: '1024x10'
-    timestamp_mode: 'TIME_FROM_ROS_TIME'
-    udp_profile_lidar: 'RNG19_RFL8_SIG16_NIR16'
-    metadata: ''
-    lidar_port: 7507
-    imu_port: 7506
-    sensor_frame: 'os_left_a'
-    lidar_frame: 'os_left_a_laser_data_frame'
-    imu_frame: 'os_left_a_imu_data_frame'
-    use_system_default_qos: false
-os_left/os_cloud:
-  ros__parameters:
-    timestamp_mode: 'TIME_FROM_ROS_TIME'  # this value needs to match os_sensor/timestamp_mode    
-    sensor_frame: 'os_left_a'
-    lidar_frame: 'os_left_a_laser_data_frame'
-    imu_frame: 'os_left_a_imu_data_frame'
-    point_type: 'xyzirc'

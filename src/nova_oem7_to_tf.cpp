@@ -40,9 +40,13 @@ private:
         // create current pose
         current_pose.header.stamp = msg->header.stamp;
         current_pose.header.frame_id = frame_id_;
-        current_pose.pose.position.x = msg->easting;
-        current_pose.pose.position.y = msg->northing;
-        current_pose.pose.position.z = 1.0;
+        // # 'x_coord_offset': -697237.0, # map_gyor_0
+        // # 'y_coord_offset': -5285644.0, # map_gyor_0
+        // # 'x_coord_offset': -639770.0, 
+        // # 'y_coord_offset': -5195040.0, # map_zala_0
+        current_pose.pose.position.x = msg->easting - 639770.0; // TODO: make it parameter
+        current_pose.pose.position.y = msg->northing - 5195040.0;
+        current_pose.pose.position.z = msg->height;
 
         geometry_msgs::msg::TransformStamped transformStamped;
         transformStamped.header.stamp = msg->header.stamp;

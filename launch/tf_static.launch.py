@@ -94,7 +94,7 @@ def generate_launch_description():
                 '--qw', '1.0',
 
                 '--frame-id',       ns_vehicle + '/' + 'base_link',
-                '--child-frame-id', ns_vehicle + '/' +'_left_camera_frame'
+                '--child-frame-id', 'zed_camera_link'
             ],
         ),
         Node(

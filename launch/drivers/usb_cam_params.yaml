@@ -1,0 +1,13 @@
+usb_cam:
+  ros__parameters:
+    video_device: "/dev/video0"
+    image_width: 640
+    image_height: 480
+    framerate: 20.0
+    pixel_format: "yuyv"
+    io_method: "mmap"
+    camera_name: "webcam"
+    frame_id: "cam_frame"
+    autoexposure: true
+    autofocus: false
+    auto_white_balance: true
