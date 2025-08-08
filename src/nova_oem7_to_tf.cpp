@@ -24,10 +24,20 @@ class CurrentPoseFromTf : public rclcpp::Node
 public:
     CurrentPoseFromTf() : Node("nova_oem7_to_tf_node")
     {
-        pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/gps/nova/current_pose", 10);
-        utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("lexus3/gps/nova/bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
-        inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("lexus3/gps/nova/inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
-        tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+        this->declare_parameter<std::string>("novatel_frame_id", "/map");
+        this->declare_parameter<std::string>("novatel_child_frame_id", "/lexus3/base_link");
+        this->declare_parameter<double>("novatel_current_pose_x_offset", 0.0);
+        this->declare_parameter<double>("novatel_current_pose_y_offset", 0.0);
+
+        this->get_parameter("novatel_frame_id", m_frame_id);
+        this->get_parameter("novatel_child_frame_id", m_child_frame_id);
+        this->get_parameter("novatel_current_pose_x_offset", m_posXOffset);
+        this->get_parameter("novatel_current_pose_y_offset", m_posYOffset);
+
+        m_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("current_pose", 10);
+        m_utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
+        m_inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
+        m_tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         RCLCPP_INFO_STREAM(this->get_logger(), "nova_oem7_to_tf node started");
     }
 
@@ -38,28 +48,24 @@ private:
     {       
         
         // create current pose
-        current_pose.header.stamp = msg->header.stamp;
-        current_pose.header.frame_id = frame_id_;
-        // # 'x_coord_offset': -697237.0, # map_gyor_0
-        // # 'y_coord_offset': -5285644.0, # map_gyor_0
-        // # 'x_coord_offset': -639770.0, 
-        // # 'y_coord_offset': -5195040.0, # map_zala_0
-        current_pose.pose.position.x = msg->easting - 639770.0; // TODO: make it parameter
-        current_pose.pose.position.y = msg->northing - 5195040.0;
-        current_pose.pose.position.z = msg->height;
+        m_currentPose.header.stamp = msg->header.stamp;
+        m_currentPose.header.frame_id = m_frame_id;
+        m_currentPose.pose.position.x = msg->easting  + m_posXOffset;
+        m_currentPose.pose.position.y = msg->northing + m_posYOffset;
+        m_currentPose.pose.position.z = msg->height;
 
         geometry_msgs::msg::TransformStamped transformStamped;
         transformStamped.header.stamp = msg->header.stamp;
-        transformStamped.header.frame_id = frame_id_;
-        transformStamped.child_frame_id = child_frame_id_;
+        transformStamped.header.frame_id = m_frame_id;
+        transformStamped.child_frame_id = m_child_frame_id;
         transformStamped.transform.translation.x = msg->easting;
         transformStamped.transform.translation.y = msg->northing;
-        transformStamped.transform.translation.z = current_pose.pose.position.z;
-        transformStamped.transform.rotation = current_pose.pose.orientation;
+        transformStamped.transform.translation.z = m_currentPose.pose.position.z;
+        transformStamped.transform.rotation = m_currentPose.pose.orientation;
         // Publish tf
-        tf_broadcaster_->sendTransform(transformStamped);
+        m_tfBroadcaster_->sendTransform(transformStamped);
         // Publish the current pose
-        pose_pub_->publish(current_pose);
+        m_pose_pub_->publish(m_currentPose);
     }
 
     void inspva_callback(const novatel_oem7_msgs::msg::INSPVA::SharedPtr msg)
@@ -74,20 +80,21 @@ private:
         oriRot.setRPY(0.0, 0.0, M_PI/2.0);
         oriNew = oriRot * oriQuater;
         oriNew.normalize();
-        current_pose.pose.orientation.w = oriNew.getW() * -1;
-        current_pose.pose.orientation.x = oriNew.getY();
-        current_pose.pose.orientation.y = oriNew.getX() * -1;
-        current_pose.pose.orientation.z = oriNew.getZ();
+        m_currentPose.pose.orientation.w = oriNew.getW() * -1;
+        m_currentPose.pose.orientation.x = oriNew.getY();
+        m_currentPose.pose.orientation.y = oriNew.getX() * -1;
+        m_currentPose.pose.orientation.z = oriNew.getZ();
     }
 
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
-    rclcpp::Subscription<novatel_oem7_msgs::msg::BESTUTM>::SharedPtr utm_sub_;
-    rclcpp::Subscription<novatel_oem7_msgs::msg::INSPVA>::SharedPtr inspva_sub_;
-    std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    geometry_msgs::msg::PoseStamped current_pose;
-    // TODO: parameters 
-    std::string frame_id_ = "map";
-    std::string child_frame_id_ = "lexus3/base_link";
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_pose_pub_;
+    rclcpp::Subscription<novatel_oem7_msgs::msg::BESTUTM>::SharedPtr m_utm_sub_;
+    rclcpp::Subscription<novatel_oem7_msgs::msg::INSPVA>::SharedPtr m_inspva_sub_;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> m_tfBroadcaster_;
+    geometry_msgs::msg::PoseStamped m_currentPose;
+    double m_posXOffset = 0.0;
+    double m_posYOffset = 0.0;
+    std::string m_frame_id = "map";
+    std::string m_child_frame_id = "lexus3/base_link";
 };
 
 int main(int argc, char **argv)
