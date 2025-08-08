@@ -2,50 +2,46 @@ from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction
-
-from launch.substitutions import LaunchConfiguration, FindExecutable
-# from launch_ros.actions import PushRosNamespace
+from launch.substitutions import LaunchConfiguration, FindExecutable, PathJoinSubstitution
+from os.path import join
 
 def generate_launch_description():
-    """
-    Generate launch description for running ouster_ros components in a single
-    process/container.
-    """
-    NAMESPACE = "lexus3"
-
-    pkg_dir = get_package_share_directory('lexus_bringup')
-    params_file_path = Path(pkg_dir) / 'launch' / 'drivers' / 'ouster_config_b.yaml'
-    merger_params_file_path = Path(pkg_dir) / 'launch' / 'drivers' / 'ouster_config_comp_b.yaml'
-
-
-    params_file = LaunchConfiguration('params_file')
-    params_file_arg = DeclareLaunchArgument(
-        'params_file',
-        default_value=str(params_file_path),
-        description='Ouster driver parameters.'
+    params_file_arg = DeclareLaunchArgument('params_file',
+        default_value=join(
+            get_package_share_directory('lexus_bringup'),
+            'launch',
+            'drivers',
+            'ouster_config_b.yaml'
+        ),
+        description='Name or path to the ouster driver parameter file to use.'
     )
 
-    merger_params_file = LaunchConfiguration('merger_params_file')
-    merger_params_file_arg = DeclareLaunchArgument(
-        'merger_params_file',
-        default_value=str(merger_params_file_path),
-        description='Ouster PCL Merger parameters.'
+    merger_params_file_arg = DeclareLaunchArgument('merger_params_file',
+        default_value=join(
+            get_package_share_directory('lexus_bringup'),
+            'launch',
+            'drivers',
+            'ouster_config_comp_b.yaml'
+        ),
+        description='Name or path to the ouster PCL Merger parameter file to use.'
     )
 
-    ouster_ns = LaunchConfiguration(NAMESPACE)
-    ouster_ns_arg = DeclareLaunchArgument(
-        'ouster_ns', default_value='lexus3')
+    ouster_shared_namespace_arg = DeclareLaunchArgument(
+        'ouster_shared_ns',
+        default_value='lexus3',
+        description='The namespace shared between all ouster sensors.'
+    )
 
 
     os_left_sensor = ComposableNode(
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='lexus3/os_left',
-        parameters=[params_file],
+        namespace=[LaunchConfiguration('ouster_shared_ns'), '/os_left'],
+        parameters=[LaunchConfiguration('params_file')],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -53,8 +49,8 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterCloud',
         name='os_cloud',
-        namespace='lexus3/os_left',
-        parameters=[params_file],
+        namespace=[LaunchConfiguration('ouster_shared_ns'), '/os_left'],
+        parameters=[LaunchConfiguration('params_file')],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -62,8 +58,8 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='lexus3/os_right',
-        parameters=[params_file],
+        namespace=[LaunchConfiguration('ouster_shared_ns'), '/os_right'],
+        parameters=[LaunchConfiguration('params_file')],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -71,8 +67,8 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterCloud',
         name='os_cloud',
-        namespace='lexus3/os_right',
-        parameters=[params_file],
+        namespace=[LaunchConfiguration('ouster_shared_ns'), '/os_right'],
+        parameters=[LaunchConfiguration('params_file')],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -80,8 +76,8 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterSensor',
         name='os_driver',
-        namespace='lexus3/os_center',
-        parameters=[params_file],
+        namespace=[LaunchConfiguration('ouster_shared_ns'), '/os_center'],
+        parameters=[LaunchConfiguration('params_file')],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -89,8 +85,8 @@ def generate_launch_description():
         package='ouster_ros',
         plugin='ouster_ros::OusterCloud',
         name='os_cloud',
-        namespace='lexus3/os_center',
-        parameters=[params_file],
+        namespace=[LaunchConfiguration('ouster_shared_ns'), '/os_center'],
+        parameters=[LaunchConfiguration('params_file')],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -99,8 +95,8 @@ def generate_launch_description():
         plugin='merger::OusterPCLMerger',
         # executable from `rclcpp_components_register_node` (CMakeLists.txt)
         name='os_pcl_merger_node',
-        namespace='lexus3',
-        parameters=[merger_params_file],
+        namespace=LaunchConfiguration('ouster_shared_ns'),
+        parameters=[LaunchConfiguration('merger_params_file')],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
 
@@ -108,10 +104,9 @@ def generate_launch_description():
         package='patchworkpp',
         plugin='patchworkpp::PatchworkppPointXYZI',
         name='ground_segmentation',
-        # namespace='lexus3/os_left',
         parameters=[
-            {'cloud_topic': '/lexus3/sensing/lidar/concatenated/pointcloud'}, # Input pointcloud
-            {'frame_id': 'lexus3/os_center_a'},
+            {'cloud_topic': [LaunchConfiguration('ouster_shared_ns'), '/sensing/lidar/concatenated/pointcloud']}, # Input pointcloud
+            {'frame_id': [LaunchConfiguration('ouster_shared_ns'), '/os_center_a']},
             {'sensor_height': 1.88},
             {'num_iter': 3},             # Number of iterations for ground plane estimation using PCA.
             {'num_lpr': 20},             # Maximum number of points to be selected as lowest points representative.
@@ -128,6 +123,7 @@ def generate_launch_description():
         ],
         extra_arguments=[{'use_intra_process_comms': True}],
     )
+    
     os_container = ComposableNodeContainer(
         name='os_container',
         namespace='',
@@ -155,18 +151,18 @@ def generate_launch_description():
             shell=True
         )
 
-    sensor_left_configure_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'configure')
-    sensor_left_activate_cmd = invoke_lifecycle_cmd('lexus3/os_left/os_driver', 'activate')
-    sensor_right_configure_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'configure')
-    sensor_right_activate_cmd = invoke_lifecycle_cmd('lexus3/os_right/os_driver', 'activate')
-    sensor_center_configure_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'configure')
-    sensor_center_activate_cmd = invoke_lifecycle_cmd('lexus3/os_center/os_driver', 'activate')
+    sensor_left_configure_cmd   = invoke_lifecycle_cmd(PathJoinSubstitution([LaunchConfiguration('ouster_shared_ns'), 'os_left', 'os_driver']),   'configure')
+    sensor_left_activate_cmd    = invoke_lifecycle_cmd(PathJoinSubstitution([LaunchConfiguration('ouster_shared_ns'), 'os_left', 'os_driver']),   'activate')
+    sensor_right_configure_cmd  = invoke_lifecycle_cmd(PathJoinSubstitution([LaunchConfiguration('ouster_shared_ns'), 'os_right', 'os_driver']),  'configure')
+    sensor_right_activate_cmd   = invoke_lifecycle_cmd(PathJoinSubstitution([LaunchConfiguration('ouster_shared_ns'), 'os_right', 'os_driver']),  'activate')
+    sensor_center_configure_cmd = invoke_lifecycle_cmd(PathJoinSubstitution([LaunchConfiguration('ouster_shared_ns'), 'os_center', 'os_driver']), 'configure')
+    sensor_center_activate_cmd  = invoke_lifecycle_cmd(PathJoinSubstitution([LaunchConfiguration('ouster_shared_ns'), 'os_center', 'os_driver']), 'activate')
     
 
     return LaunchDescription([
         params_file_arg,
         merger_params_file_arg,
-        ouster_ns_arg,
+        ouster_shared_namespace_arg,
         os_container,
         TimerAction(period=4.0, actions=[sensor_left_configure_cmd]),
         TimerAction(period=8.0, actions=[sensor_left_activate_cmd]),
