@@ -87,6 +87,7 @@ rclcpp_components_register_node(
 
 install(DIRECTORY 
   launch
+  config
   etc
   DESTINATION share/${PROJECT_NAME})
 install(TARGETS

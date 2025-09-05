@@ -24,11 +24,35 @@ class CurrentPoseFromTf : public rclcpp::Node
 public:
     CurrentPoseFromTf() : Node("nova_oem7_to_tf_node")
     {
+
+        this->declare_parameter<float>("x_coord_offset", -697237.0);
+        this->declare_parameter<float>("y_coord_offset", -5285644.0);
+        this->declare_parameter<float>("z_coord_exact_height", 1.9);
+        this->declare_parameter<std::string>("frame_id", "map");
+        this->declare_parameter<std::string>("child_frame_id", "lexus3/base_link");
+        this->declare_parameter<std::string>("z_coord_ref_switch", "orig");
+        this->get_parameter("x_coord_offset", x_coord_offset_);
+        this->get_parameter("y_coord_offset", y_coord_offset_);
+        this->get_parameter("z_coord_exact_height", z_coord_exact_height_);
+        this->get_parameter("frame_id", frame_id_);
+        this->get_parameter("child_frame_id", child_frame_id_);
+        this->get_parameter("z_coord_ref_switch", z_coord_ref_switch_);
+
+       
         pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/gps/nova/current_pose", 10);
-        utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("lexus3/gps/nova/bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
-        inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("lexus3/gps/nova/inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
+        utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("/novatel/oem7/bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
+        inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("/novatel/oem7/inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
         tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         RCLCPP_INFO_STREAM(this->get_logger(), "nova_oem7_to_tf node started");
+        RCLCPP_INFO_STREAM(this->get_logger(), "nova coord offset: " << x_coord_offset_ << ", " << y_coord_offset_ << ", " << z_coord_exact_height_);
+        RCLCPP_INFO_STREAM(this->get_logger(), "nova frame_id: " << frame_id_ << ", child_frame_id: " << child_frame_id_);
+        if (z_coord_ref_switch_.compare("exact") == 0){
+            RCLCPP_INFO_STREAM(this->get_logger(), "nova exact height (z): " << z_coord_exact_height_);
+        }
+        else {
+            RCLCPP_INFO_STREAM(this->get_logger(), "nova original height (z)");
+        }
+
     }
 
 private:
@@ -44,17 +68,28 @@ private:
         // # 'y_coord_offset': -5285644.0, # map_gyor_0
         // # 'x_coord_offset': -639770.0, 
         // # 'y_coord_offset': -5195040.0, # map_zala_0
-        current_pose.pose.position.x = msg->easting - 639770.0; // TODO: make it parameter
-        current_pose.pose.position.y = msg->northing - 5195040.0;
-        current_pose.pose.position.z = msg->height;
+        current_pose.pose.position.x = msg->easting + x_coord_offset_; 
+        current_pose.pose.position.y = msg->northing + y_coord_offset_; 
+        if (z_coord_ref_switch_.compare("exact") == 0){
+            current_pose.pose.position.z = z_coord_exact_height_; 
+        }
+        else {
+            current_pose.pose.position.z = msg->height; // original height
+        }
 
         geometry_msgs::msg::TransformStamped transformStamped;
         transformStamped.header.stamp = msg->header.stamp;
         transformStamped.header.frame_id = frame_id_;
         transformStamped.child_frame_id = child_frame_id_;
-        transformStamped.transform.translation.x = msg->easting;
-        transformStamped.transform.translation.y = msg->northing;
+        transformStamped.transform.translation.x = msg->easting + x_coord_offset_; 
+        transformStamped.transform.translation.y = msg->northing + y_coord_offset_;
         transformStamped.transform.translation.z = current_pose.pose.position.z;
+        if (z_coord_ref_switch_.compare("exact") == 0){
+            transformStamped.transform.translation.z = z_coord_exact_height_; 
+        }
+        else {
+            transformStamped.transform.translation.z = msg->height; // original height
+        }
         transformStamped.transform.rotation = current_pose.pose.orientation;
         // Publish tf
         tf_broadcaster_->sendTransform(transformStamped);
@@ -88,6 +123,11 @@ private:
     // TODO: parameters 
     std::string frame_id_ = "map";
     std::string child_frame_id_ = "lexus3/base_link";
+    std::string z_coord_ref_switch_ = "orig"; // orig or exact
+    double x_coord_offset_ = 0.0;
+    double y_coord_offset_ = 0.0;
+    double z_coord_exact_height_ = 1.9;
+
 };
 
 int main(int argc, char **argv)
