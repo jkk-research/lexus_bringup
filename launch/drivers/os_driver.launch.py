@@ -13,17 +13,17 @@ from os.path import join
 
 
 def generate_launch_description():
-    ouster_namespace_arg = DeclareLaunchArgument(
-        'ouster_ns',
-        default_value='lexus3/os_left',
-        description='Namespace for the Ouster sensor node')
+    ouster_full_namespace_arg = DeclareLaunchArgument(
+        'ouster_full_ns',
+        default_value=['lexus3/os_left'],
+        description='Complete namespace for the ouster driver')
 
     params_file_arg = DeclareLaunchArgument('params_file',
         default_value=join(
             get_package_share_directory('lexus_bringup'),
-            'launch',
-            'drivers',
-            'ouster_config_b.yaml'
+            'config',
+            'lidar',
+            'ouster_config_left.yaml'
         ),
         description='Name or path to the parameter file to use.'
     )
@@ -32,7 +32,7 @@ def generate_launch_description():
         package='ouster_ros',
         executable='os_driver',
         name="os_driver",
-        namespace=LaunchConfiguration('ouster_ns'),
+        namespace=LaunchConfiguration('ouster_full_ns'),
         parameters=[LaunchConfiguration('params_file')],
         output='screen',
     )
@@ -59,7 +59,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        ouster_namespace_arg,
+        ouster_full_namespace_arg,
         params_file_arg,
 
         os_driver,
