@@ -56,8 +56,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',       ns_vehicle + '/' + 'base_link',
-                '--child-frame-id', ns_vehicle + '/' + 'duro_gps'
+                '--frame-id',      'base_link',
+                '--child-frame-id','duro_gps'
             ],
         ),
         Node(
@@ -75,8 +75,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',       ns_vehicle + '/' + 'gps',
-                '--child-frame-id', ns_vehicle + '/' + 'base_link'
+                '--frame-id',      'gps',
+                '--child-frame-id','base_link'
             ],
         ),
         Node(
@@ -93,7 +93,7 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',       ns_vehicle + '/' + 'base_link',
+                '--frame-id',      'base_link',
                 '--child-frame-id', 'zed_camera_link'
             ],
         ),
@@ -111,8 +111,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',       ns_vehicle + '/' + 'base_link',
-                '--child-frame-id', ns_vehicle + '/' + 'duro_gps_imu'
+                '--frame-id',      'base_link',
+                '--child-frame-id','duro_gps_imu'
             ],
         ),
         Node(
@@ -129,8 +129,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
                 
-                '--frame-id',       ns_vehicle + '/' + 'base_link',
-                '--child-frame-id', ns_vehicle + '/' + 'ground_link'],
+                '--frame-id',      'base_link',
+                '--child-frame-id','ground_link'],
         ),
         Node(
             package='tf2_ros',
@@ -145,8 +145,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',       ns_vehicle + '/' + 'base_link',
-                '--child-frame-id', ns_vehicle + '/' + 'os_left_a'
+                '--frame-id',      'base_link',
+                '--child-frame-id','os_left_a'
             ],
         ),
         Node(
@@ -162,8 +162,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',       ns_vehicle + '/' + 'base_link',
-                '--child-frame-id', ns_vehicle + '/' + 'os_right_a'
+                '--frame-id',      'base_link',
+                '--child-frame-id','os_right_a'
             ],
         ),
         Node(
@@ -179,8 +179,93 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',       ns_vehicle + '/' + 'base_link',
-                '--child-frame-id', ns_vehicle + '/' + 'os_center_a'
+                '--frame-id',      'base_link',
+                '--child-frame-id','os_center_a'
+            ],
+        ),Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='center_radar_static_tf',
+            output='screen',
+            arguments=[
+                '--x',     '3.8',
+                '--y',     '0.0',
+                '--z',     '0.0',
+                '--yaw',   '0.0',
+                '--pitch', '0.0',
+                '--roll',  '0.0',
+
+                '--frame-id',      'base_link',
+                '--child-frame-id','radar_front_center'
+            ],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='front_left_static',
+            output='screen',
+            arguments=[
+                '--x',     '3.5',
+                '--y',     '0.835',
+                '--z',     '0.0',
+                '--yaw',   '0.78',
+                '--pitch', '0.0',
+                '--roll',  '0.0',
+
+                '--frame-id',      'base_link',
+                '--child-frame-id','radar_front_left'
+            ],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='front_right_static',
+            output='screen',
+            arguments=[
+                '--x',     '3.5',
+                '--y',     '-0.835',
+                '--z',     '0.0',
+                '--yaw',   '-0.78',
+                '--pitch', '0.0',
+                '--roll',  '0.0',
+
+                '--frame-id',      'base_link',
+                '--child-frame-id','radar_front_right'
+            ],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='rear_left_static',
+            output='screen',
+            arguments=[
+                '--x',     '-0.85',
+                '--y',     '0.58',
+                '--z',     '0.0',
+                '--yaw',   '2.356',
+                '--pitch', '0.0',
+                '--roll',  '0.0',
+
+                '--frame-id',      'base_link',
+                '--child-frame-id','radar_rear_left'
+            ],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='rear_right_static',
+            output='screen',
+            arguments=[
+                '--x',     '-0.85',
+                '--y',     '-0.58',
+                '--z',     '0.0',
+                '--yaw',   '-2.356',
+                '--pitch', '0.0',
+                '--roll',  '0.0',
+
+                '--frame-id',      'base_link',
+                '--child-frame-id','radar_rear_right'
             ],
         )
+        
     ])
