@@ -208,9 +208,9 @@ def generate_launch_description():
                 '--x',     '3.5',
                 '--y',     '0.835',
                 '--z',     '0.0',
-                '--yaw',   '0.78',
+                '--yaw',   '1.04719755',
                 '--pitch', '0.0',
-                '--roll',  '0.0',
+                '--roll',  '3.141592654',
 
                 '--frame-id',      'base_link',
                 '--child-frame-id','radar_front_left'
@@ -225,7 +225,7 @@ def generate_launch_description():
                 '--x',     '3.5',
                 '--y',     '-0.835',
                 '--z',     '0.0',
-                '--yaw',   '-0.78',
+                '--yaw',   '-1.04719755',
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
@@ -242,7 +242,7 @@ def generate_launch_description():
                 '--x',     '-0.85',
                 '--y',     '0.58',
                 '--z',     '0.0',
-                '--yaw',   '2.356',
+                '--yaw',   '2.0943951',
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
@@ -259,13 +259,29 @@ def generate_launch_description():
                 '--x',     '-0.85',
                 '--y',     '-0.58',
                 '--z',     '0.0',
-                '--yaw',   '-2.356',
+                '--yaw',   '-2.0943951',
                 '--pitch', '0.0',
-                '--roll',  '0.0',
+                '--roll',  '3.141592654',
 
                 '--frame-id',      'base_link',
                 '--child-frame-id','radar_rear_right'
             ],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='luminar_static',
+            output='screen',
+            arguments=[
+                '--x',     '1.43',
+                '--y',     '-0.3',
+                '--z',     '1.41',
+                '--yaw',   '0.0',
+                '--pitch', '0.0',
+                '--roll',  '-0.0174533',
+
+                '--frame-id',      'base_link',
+                '--child-frame-id','luminar_lidar_0'
+            ],
         )
-        
     ])
