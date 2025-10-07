@@ -29,12 +29,6 @@ namespace merger
                 "topics", std::vector<std::string>()
             );
             this->declare_parameter(
-                "frames", std::vector<std::string>()
-            );
-            this->declare_parameter(
-                "child_frames", std::vector<std::string>()
-            );
-            this->declare_parameter(
                 "target_frame", ""
             );
             this->declare_parameter(
@@ -56,8 +50,6 @@ namespace merger
 
 
             topic_list = this->get_parameter("topics").as_string_array();
-            frame_list = this->get_parameter("frames").as_string_array();
-            child_frame_list = this->get_parameter("child_frames").as_string_array();
             target_frame = this->get_parameter("target_frame").as_string();
             pub_topic_name = this->get_parameter("pub_topic_name").as_string();
             merger_freq = this->get_parameter("merger_freq").as_double();
@@ -109,8 +101,6 @@ namespace merger
         }
     private:
         std::vector<std::string> topic_list;
-        std::vector<std::string> frame_list;
-        std::vector<std::string> child_frame_list;
         std::string target_frame;
         std::string pub_topic_name;
 

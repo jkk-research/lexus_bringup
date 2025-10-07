@@ -144,19 +144,9 @@ def generate_launch_description():
                     [LaunchConfiguration('ouster_full_ns_right'),  '/points'],
                     [LaunchConfiguration('ouster_full_ns_center'), '/points']
                 ],
-                'frames': [
-                    'lexus3/os_left_a',
-                    'lexus3/os_right_a',
-                    'lexus3/os_center_a'
-                ],
-                'child_frames': [
-                    'null',
-                    'null',
-                    'null'
-                ],
-                'target_frame': 'lexus3/os_center_a',
+                'target_frame'  : [LaunchConfiguration('ouster_full_ns_left'), '/os_center_a'],
                 'pub_topic_name': LaunchConfiguration('merged_pc_topic_name'),
-                'merger_freq': LaunchConfiguration('merged_pc_frequency'),
+                'merger_freq'   : LaunchConfiguration('merged_pc_frequency'),
                 'crop_box': {
                     'min_x'   : -1.5,  # Points with X < "val" will be excluded. (half of the vehicle's length backward)
                     'min_y'   : -0.95, # Points with Y < "val" will be excluded. (half of the vehicle's width to the right)
