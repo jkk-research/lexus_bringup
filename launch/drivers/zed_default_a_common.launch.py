@@ -37,7 +37,8 @@ from launch_ros.actions import Node
 default_config_common = os.path.join(
     get_package_share_directory('lexus_bringup'),
     'launch',
-    'drivers',
+    'config',
+    'camera',
     'zed_default_a_common.yaml'
 )
 

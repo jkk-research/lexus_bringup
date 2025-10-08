@@ -64,15 +64,6 @@ def generate_launch_description():
             'ouster_config_center.yaml'
         )
     )
-    merger_param_arg = DeclareLaunchArgument(
-        'merger_params_file',
-        default_value=join(
-            get_package_share_directory('lexus_bringup'),
-            'config',
-            'lidar',
-            'ouster_config_comp.yaml'
-        )
-    )
 
     os_left_sensor = ComposableNode(
         package='ouster_ros',
@@ -131,11 +122,9 @@ def generate_launch_description():
     os_pcl_merger = ComposableNode(
         package='lexus_bringup',
         plugin='merger::OusterPCLMerger',
-        # executable from `rclcpp_components_register_node` (CMakeLists.txt)
         name='os_pcl_merger_node',
         namespace=LaunchConfiguration('ouster_ns'),
         parameters=[
-            LaunchConfiguration('merger_params_file'),
             {
                 'topics': [
                     [LaunchConfiguration('ouster_full_ns_left'),   '/points'],
@@ -195,7 +184,6 @@ def generate_launch_description():
         ouster_left_param_arg,
         ouster_right_param_arg,
         ouster_center_param_arg,
-        merger_param_arg,
         os_container,
 
         TimerAction(period=4.0, actions=[invoke_lifecycle_cmd('ouster_full_ns_left', 'os_driver', 'configure')]),
