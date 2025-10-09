@@ -40,7 +40,7 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 launch_description_source=PythonLaunchDescriptionSource([
                     get_package_share_directory('lexus_bringup'),
-                    '/launch/drivers/zed_default_a_common.launch.py'
+                    '/launch/drivers/cam_zed_default_common.launch.py'
                 ]),
                 launch_arguments={
                     'camera_model': camera_model,

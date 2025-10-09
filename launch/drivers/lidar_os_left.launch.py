@@ -35,7 +35,7 @@ def generate_launch_description():
                 get_package_share_directory('lexus_bringup'),
                 'launch',
                 'drivers',
-                'os_driver.launch.py')
+                'lidar_os_driver.launch.py')
         )
     )
 

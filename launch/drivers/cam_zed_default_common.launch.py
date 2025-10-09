@@ -39,7 +39,7 @@ default_config_common = os.path.join(
     'launch',
     'config',
     'camera',
-    'zed_default_a_common.yaml'
+    'zed_default_common.yaml'
 )
 
 # URDF/xacro file to be loaded by the Robot State Publisher node
