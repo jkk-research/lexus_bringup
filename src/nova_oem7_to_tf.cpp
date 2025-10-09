@@ -24,21 +24,35 @@ class CurrentPoseFromTf : public rclcpp::Node
 public:
     CurrentPoseFromTf() : Node("nova_oem7_to_tf_node")
     {
-        this->declare_parameter<std::string>("novatel_frame_id", "/map");
-        this->declare_parameter<std::string>("novatel_child_frame_id", "/lexus3/base_link");
-        this->declare_parameter<double>("novatel_current_pose_x_offset", 0.0);
-        this->declare_parameter<double>("novatel_current_pose_y_offset", 0.0);
 
-        this->get_parameter("novatel_frame_id", m_frame_id);
-        this->get_parameter("novatel_child_frame_id", m_child_frame_id);
-        this->get_parameter("novatel_current_pose_x_offset", m_posXOffset);
-        this->get_parameter("novatel_current_pose_y_offset", m_posYOffset);
+        this->declare_parameter<float>("x_coord_offset", -697237.0);
+        this->declare_parameter<float>("y_coord_offset", -5285644.0);
+        this->declare_parameter<float>("z_coord_exact_height", 1.9);
+        this->declare_parameter<std::string>("frame_id", "map");
+        this->declare_parameter<std::string>("child_frame_id", "lexus3/base_link");
+        this->declare_parameter<std::string>("z_coord_ref_switch", "orig");
+        this->get_parameter("x_coord_offset", m_x_coord_offset_);
+        this->get_parameter("y_coord_offset", m_y_coord_offset_);
+        this->get_parameter("z_coord_exact_height", m_z_coord_exact_height_);
+        this->get_parameter("frame_id", m_frame_id_);
+        this->get_parameter("child_frame_id", m_child_frame_id_);
+        this->get_parameter("z_coord_ref_switch", m_z_coord_ref_switch_);
 
-        m_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("current_pose", 10);
-        m_utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
-        m_inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
+       
+        m_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/gps/nova/current_pose", 10);
+        m_utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("/novatel/oem7/bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
+        m_inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("/novatel/oem7/inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
         m_tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         RCLCPP_INFO_STREAM(this->get_logger(), "nova_oem7_to_tf node started");
+        RCLCPP_INFO_STREAM(this->get_logger(), "nova coord offset: " << m_x_coord_offset_ << ", " << m_y_coord_offset_ << ", " << m_z_coord_exact_height_);
+        RCLCPP_INFO_STREAM(this->get_logger(), "nova frame_id: " << m_frame_id_ << ", child_frame_id: " << m_child_frame_id_);
+        if (m_z_coord_ref_switch_.compare("exact") == 0){
+            RCLCPP_INFO_STREAM(this->get_logger(), "nova exact height (z): " << m_z_coord_exact_height_);
+        }
+        else {
+            RCLCPP_INFO_STREAM(this->get_logger(), "nova original height (z)");
+        }
+
     }
 
 private:
@@ -49,18 +63,33 @@ private:
         
         // create current pose
         m_currentPose.header.stamp = msg->header.stamp;
-        m_currentPose.header.frame_id = m_frame_id;
-        m_currentPose.pose.position.x = msg->easting  + m_posXOffset;
-        m_currentPose.pose.position.y = msg->northing + m_posYOffset;
-        m_currentPose.pose.position.z = msg->height;
+        m_currentPose.header.frame_id = m_frame_id_;
+        // # 'x_coord_offset': -697237.0, # map_gyor_0
+        // # 'y_coord_offset': -5285644.0, # map_gyor_0
+        // # 'x_coord_offset': -639770.0, 
+        // # 'y_coord_offset': -5195040.0, # map_zala_0
+        m_currentPose.pose.position.x = msg->easting + m_x_coord_offset_; 
+        m_currentPose.pose.position.y = msg->northing + m_y_coord_offset_; 
+        if (m_z_coord_ref_switch_.compare("exact") == 0){
+            m_currentPose.pose.position.z = m_z_coord_exact_height_; 
+        }
+        else {
+            m_currentPose.pose.position.z = msg->height; // original height
+        }
 
         geometry_msgs::msg::TransformStamped transformStamped;
         transformStamped.header.stamp = msg->header.stamp;
-        transformStamped.header.frame_id = m_frame_id;
-        transformStamped.child_frame_id = m_child_frame_id;
-        transformStamped.transform.translation.x = msg->easting;
-        transformStamped.transform.translation.y = msg->northing;
+        transformStamped.header.frame_id = m_frame_id_;
+        transformStamped.child_frame_id = m_child_frame_id_;
+        transformStamped.transform.translation.x = msg->easting + m_x_coord_offset_; 
+        transformStamped.transform.translation.y = msg->northing + m_y_coord_offset_;
         transformStamped.transform.translation.z = m_currentPose.pose.position.z;
+        if (m_z_coord_ref_switch_.compare("exact") == 0){
+            transformStamped.transform.translation.z = m_z_coord_exact_height_; 
+        }
+        else {
+            transformStamped.transform.translation.z = msg->height; // original height
+        }
         transformStamped.transform.rotation = m_currentPose.pose.orientation;
         // Publish tf
         m_tfBroadcaster_->sendTransform(transformStamped);
@@ -91,10 +120,14 @@ private:
     rclcpp::Subscription<novatel_oem7_msgs::msg::INSPVA>::SharedPtr m_inspva_sub_;
     std::shared_ptr<tf2_ros::TransformBroadcaster> m_tfBroadcaster_;
     geometry_msgs::msg::PoseStamped m_currentPose;
-    double m_posXOffset = 0.0;
-    double m_posYOffset = 0.0;
-    std::string m_frame_id = "map";
-    std::string m_child_frame_id = "lexus3/base_link";
+    // TODO: parameters 
+    std::string m_frame_id_ = "map";
+    std::string m_child_frame_id_ = "lexus3/base_link";
+    std::string m_z_coord_ref_switch_ = "orig"; // orig or exact
+    double m_x_coord_offset_ = 0.0;
+    double m_y_coord_offset_ = 0.0;
+    double m_z_coord_exact_height_ = 1.9;
+
 };
 
 int main(int argc, char **argv)

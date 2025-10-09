@@ -1,0 +1,23 @@
+/**:
+    ros__parameters:
+      video_device: "/dev/video2"
+      framerate: 10.0
+      io_method: "mmap"
+      frame_id: "c2_camera_right_link"
+      pixel_format: "uyvy"  # see usb_cam/supported_formats for list of supported formats
+      av_device_format: "UYVY422"
+      image_width: 2880
+      image_height: 1860
+      camera_name: "camera1"
+      camera_info_url: "file:///home/dev/ros2_ws/src/lexus_bringup/config/tieriv_c2_camera_info_1.yaml"
+      brightness: -1
+      contrast: -1
+      saturation: -1
+      sharpness: -1
+      gain: -1
+      auto_white_balance: true
+      white_balance: 4000
+      autoexposure: true
+      exposure: 100
+      autofocus: false
+      focus: -1
