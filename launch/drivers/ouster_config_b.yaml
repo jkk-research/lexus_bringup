@@ -44,7 +44,7 @@ lexus3/os_right/os_cloud:
     imu_frame: 'lexus3/os_right_a_imu_data_frame'
 lexus3/os_left/os_driver:
   ros__parameters:
-    sensor_hostname: '192.168.10.22' # 'os-122227001628.local'
+    sensor_hostname: '192.168.10.23' # 'os-122227001628.local'
     udp_dest: '192.168.10.5'
     mtp_dest: ''
     mtp_main: false
