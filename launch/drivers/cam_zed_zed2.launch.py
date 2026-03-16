@@ -25,7 +25,7 @@ def generate_launch_description():
     
     zed_namespace_arg = DeclareLaunchArgument(
         'zed_ns',
-        default_value='lexus3',
+        default_value='lexus3/camera/zed',
         description='Namespace for the ZED camera node')
 
     # Camera model (force value)
@@ -40,7 +40,7 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 launch_description_source=PythonLaunchDescriptionSource([
                     get_package_share_directory('lexus_bringup'),
-                    '/launch/drivers/cam_zed_default_common.launch.py'
+                    '/launch/drivers/cam_zed_driver.launch.py'
                 ]),
                 launch_arguments={
                     'camera_model': camera_model,

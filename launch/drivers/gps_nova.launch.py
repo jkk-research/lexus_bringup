@@ -36,10 +36,19 @@ def arg(name, default_value, description):
 
     
 def generate_launch_description():
+    nova_namespace_arg = DeclareLaunchArgument(
+        'novatel_ns',
+        default_value='lexus3/gps/nova',
+        description='Namespace for the novatel gps node')
+    
+    nova_ip_arg   = arg('novatel_ip_addr',   '192.168.10.12',    'IP Address of Oem7 Receiver, e.g. 192.168.1.2')
+    nova_port_arg = arg('novatel_port',      '3001',             'TCP or UDP port, e.g. 3002')
+    nova_if_arg   = arg('novatel_interface',  'Oem7ReceiverUdp', 'Interface Type: Oem7ReceiverTcp or Oem7ReceiverUdp')
+    
 
-    node = Node(
+    nova_node = Node(
         package=PKG,
-        namespace='novatel/oem7',
+        namespace=LaunchConfiguration('novatel_ns'),
         name='main',
         executable='novatel_oem7_driver_exe',
         
@@ -54,9 +63,9 @@ def generate_launch_description():
                 # Receiver IO Parameters
                 'oem7_max_io_errors' : 10,
                 'oem7_msg_decoder': 'Oem7MessageDecoder',
-                'oem7_if'         : LaunchConfiguration('oem7_if'),
-                'oem7_ip_addr'    : LaunchConfiguration('oem7_ip_addr'),
-                'oem7_port'       : LaunchConfiguration('oem7_port'),
+                'novatel_interface'  : LaunchConfiguration('novatel_interface'),
+                'novatel_ip_addr'    : LaunchConfiguration('novatel_ip_addr'),
+                'novatel_port'       : LaunchConfiguration('novatel_port'),
                 
                 # Topic Parameters
                 'oem7_position_source' : '', # If not set, then uses INSPVA or BESTPOS based on quality
@@ -77,11 +86,11 @@ def generate_launch_description():
         output='screen',
     )
     
-    ip_arg   = arg('oem7_ip_addr', '192.168.10.12',    'IP Address of Oem7 Receiver, e.g. 192.168.1.2')
-    port_arg = arg('oem7_port',   '3001',              'TCP or UDP port, e.g. 3002')
-    if_arg   = arg('oem7_if',     'Oem7ReceiverUdp',   'Interface Type: Oem7ReceiverTcp or Oem7ReceiverUdp')
-    
     return LaunchDescription([
-        ip_arg, port_arg, if_arg,
-        node
+        nova_namespace_arg,
+        nova_ip_arg,
+        nova_port_arg,
+        nova_if_arg,
+
+        nova_node
     ])

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="use_kvaser" default="true" />
+  <arg name="use_kvaser" default="false" />
   <!-- ros2 run kvaser_interface list_channels  -->
   <arg name="kvaser_hardware_id" default="12059" />
   <arg name="kvaser_circuit_id" default="0" />
-  <arg name="use_socketcan" default="false" />
+  <arg name="use_socketcan" default="true" />
   <arg name="socketcan_device" default="can0" />
   <arg name="namespace" default="lexus3/pacmod" />
   <!-- namespace -->
