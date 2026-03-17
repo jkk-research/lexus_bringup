@@ -290,5 +290,40 @@ def generate_launch_description():
                 '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
                 '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/luminar_lidar_0']
             ],
-        )
+        ),
+         Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='luminar_tf_publisher',
+            output='screen',
+            arguments=[
+                '--x',     '1.43',
+                '--y',     '-0.3',
+                '--z',     '1.41',
+                '--yaw',   '-0.0174533',
+                '--pitch', '0.0',
+                '--roll',  '0.0',
+
+                '--frame-id',       ns_vehicle + '/' + 'base_link',
+                '--child-frame-id', ns_vehicle + '/' + 'luminar_lidar_0'
+            ],
+        ),
+         Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='imu_tf_publisher',
+            output='screen',
+            arguments=[
+                '--x',     '0.0',
+                '--y',     '0.0',
+                '--z',     '0.0',
+                '--yaw',   '0.0',
+                '--pitch', '0.0',
+                '--roll',  '0.0',
+
+                '--frame-id',       ns_vehicle + '/' + 'base_link',
+                '--child-frame-id',  'imu_link'
+            ],
+
+        ),
     ])

@@ -30,7 +30,7 @@ class CameraConfig(BaseModel):
             raise FileNotFoundError(f'Could not find parameter file: {value}')
         return value
 
-    @root_validator
+    @root_validator(allow_reuse=True)
     def validate_root(cls, values):
         name = values.get('name')
         remappings = values.get('remappings')
@@ -47,9 +47,9 @@ class CameraConfig(BaseModel):
         values['remappings'] = remappings
         return values
 
-# Hack to get relative import of .camera_config file working
-dir_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(dir_path)
+# # Hack to get relative import of .camera_config file working
+# dir_path = os.path.dirname(os.path.realpath(__file__))
+# sys.path.append(dir_path)
 
 
 CAMERAS = []
