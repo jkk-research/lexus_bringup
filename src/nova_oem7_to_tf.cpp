@@ -31,23 +31,23 @@ public:
         this->declare_parameter<std::string>("frame_id", "map");
         this->declare_parameter<std::string>("child_frame_id", "lexus3/base_link");
         this->declare_parameter<std::string>("z_coord_ref_switch", "orig");
-        this->get_parameter("x_coord_offset", x_coord_offset_);
-        this->get_parameter("y_coord_offset", y_coord_offset_);
-        this->get_parameter("z_coord_exact_height", z_coord_exact_height_);
-        this->get_parameter("frame_id", frame_id_);
-        this->get_parameter("child_frame_id", child_frame_id_);
-        this->get_parameter("z_coord_ref_switch", z_coord_ref_switch_);
+        this->get_parameter("x_coord_offset", m_x_coord_offset_);
+        this->get_parameter("y_coord_offset", m_y_coord_offset_);
+        this->get_parameter("z_coord_exact_height", m_z_coord_exact_height_);
+        this->get_parameter("frame_id", m_frame_id_);
+        this->get_parameter("child_frame_id", m_child_frame_id_);
+        this->get_parameter("z_coord_ref_switch", m_z_coord_ref_switch_);
 
        
-        pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/gps/nova/current_pose", 10);
-        utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("/novatel/oem7/bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
-        inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("/novatel/oem7/inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
-        tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+        m_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/gps/nova/current_pose", 10);
+        m_utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("/novatel/oem7/bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
+        m_inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("/novatel/oem7/inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
+        m_tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         RCLCPP_INFO_STREAM(this->get_logger(), "nova_oem7_to_tf node started");
-        RCLCPP_INFO_STREAM(this->get_logger(), "nova coord offset: " << x_coord_offset_ << ", " << y_coord_offset_ << ", " << z_coord_exact_height_);
-        RCLCPP_INFO_STREAM(this->get_logger(), "nova frame_id: " << frame_id_ << ", child_frame_id: " << child_frame_id_);
-        if (z_coord_ref_switch_.compare("exact") == 0){
-            RCLCPP_INFO_STREAM(this->get_logger(), "nova exact height (z): " << z_coord_exact_height_);
+        RCLCPP_INFO_STREAM(this->get_logger(), "nova coord offset: " << m_x_coord_offset_ << ", " << m_y_coord_offset_ << ", " << m_z_coord_exact_height_);
+        RCLCPP_INFO_STREAM(this->get_logger(), "nova frame_id: " << m_frame_id_ << ", child_frame_id: " << m_child_frame_id_);
+        if (m_z_coord_ref_switch_.compare("exact") == 0){
+            RCLCPP_INFO_STREAM(this->get_logger(), "nova exact height (z): " << m_z_coord_exact_height_);
         }
         else {
             RCLCPP_INFO_STREAM(this->get_logger(), "nova original height (z)");
@@ -62,39 +62,39 @@ private:
     {       
         
         // create current pose
-        current_pose.header.stamp = msg->header.stamp;
-        current_pose.header.frame_id = frame_id_;
+        m_currentPose.header.stamp = msg->header.stamp;
+        m_currentPose.header.frame_id = m_frame_id_;
         // # 'x_coord_offset': -697237.0, # map_gyor_0
         // # 'y_coord_offset': -5285644.0, # map_gyor_0
         // # 'x_coord_offset': -639770.0, 
         // # 'y_coord_offset': -5195040.0, # map_zala_0
-        current_pose.pose.position.x = msg->easting + x_coord_offset_; 
-        current_pose.pose.position.y = msg->northing + y_coord_offset_; 
-        if (z_coord_ref_switch_.compare("exact") == 0){
-            current_pose.pose.position.z = z_coord_exact_height_; 
+        m_currentPose.pose.position.x = msg->easting + m_x_coord_offset_; 
+        m_currentPose.pose.position.y = msg->northing + m_y_coord_offset_; 
+        if (m_z_coord_ref_switch_.compare("exact") == 0){
+            m_currentPose.pose.position.z = m_z_coord_exact_height_; 
         }
         else {
-            current_pose.pose.position.z = msg->height; // original height
+            m_currentPose.pose.position.z = msg->height; // original height
         }
 
         geometry_msgs::msg::TransformStamped transformStamped;
         transformStamped.header.stamp = msg->header.stamp;
-        transformStamped.header.frame_id = frame_id_;
-        transformStamped.child_frame_id = child_frame_id_;
-        transformStamped.transform.translation.x = msg->easting + x_coord_offset_; 
-        transformStamped.transform.translation.y = msg->northing + y_coord_offset_;
-        transformStamped.transform.translation.z = current_pose.pose.position.z;
-        if (z_coord_ref_switch_.compare("exact") == 0){
-            transformStamped.transform.translation.z = z_coord_exact_height_; 
+        transformStamped.header.frame_id = m_frame_id_;
+        transformStamped.child_frame_id = m_child_frame_id_;
+        transformStamped.transform.translation.x = msg->easting + m_x_coord_offset_; 
+        transformStamped.transform.translation.y = msg->northing + m_y_coord_offset_;
+        transformStamped.transform.translation.z = m_currentPose.pose.position.z;
+        if (m_z_coord_ref_switch_.compare("exact") == 0){
+            transformStamped.transform.translation.z = m_z_coord_exact_height_; 
         }
         else {
             transformStamped.transform.translation.z = msg->height; // original height
         }
-        transformStamped.transform.rotation = current_pose.pose.orientation;
+        transformStamped.transform.rotation = m_currentPose.pose.orientation;
         // Publish tf
-        tf_broadcaster_->sendTransform(transformStamped);
+        m_tfBroadcaster_->sendTransform(transformStamped);
         // Publish the current pose
-        pose_pub_->publish(current_pose);
+        m_pose_pub_->publish(m_currentPose);
     }
 
     void inspva_callback(const novatel_oem7_msgs::msg::INSPVA::SharedPtr msg)
@@ -109,24 +109,24 @@ private:
         oriRot.setRPY(0.0, 0.0, M_PI/2.0);
         oriNew = oriRot * oriQuater;
         oriNew.normalize();
-        current_pose.pose.orientation.w = oriNew.getW() * -1;
-        current_pose.pose.orientation.x = oriNew.getY();
-        current_pose.pose.orientation.y = oriNew.getX() * -1;
-        current_pose.pose.orientation.z = oriNew.getZ();
+        m_currentPose.pose.orientation.w = oriNew.getW() * -1;
+        m_currentPose.pose.orientation.x = oriNew.getY();
+        m_currentPose.pose.orientation.y = oriNew.getX() * -1;
+        m_currentPose.pose.orientation.z = oriNew.getZ();
     }
 
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
-    rclcpp::Subscription<novatel_oem7_msgs::msg::BESTUTM>::SharedPtr utm_sub_;
-    rclcpp::Subscription<novatel_oem7_msgs::msg::INSPVA>::SharedPtr inspva_sub_;
-    std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    geometry_msgs::msg::PoseStamped current_pose;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_pose_pub_;
+    rclcpp::Subscription<novatel_oem7_msgs::msg::BESTUTM>::SharedPtr m_utm_sub_;
+    rclcpp::Subscription<novatel_oem7_msgs::msg::INSPVA>::SharedPtr m_inspva_sub_;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> m_tfBroadcaster_;
+    geometry_msgs::msg::PoseStamped m_currentPose;
     // TODO: parameters 
-    std::string frame_id_ = "map";
-    std::string child_frame_id_ = "lexus3/base_link";
-    std::string z_coord_ref_switch_ = "orig"; // orig or exact
-    double x_coord_offset_ = 0.0;
-    double y_coord_offset_ = 0.0;
-    double z_coord_exact_height_ = 1.9;
+    std::string m_frame_id_ = "map";
+    std::string m_child_frame_id_ = "lexus3/base_link";
+    std::string m_z_coord_ref_switch_ = "orig"; // orig or exact
+    double m_x_coord_offset_ = 0.0;
+    double m_y_coord_offset_ = 0.0;
+    double m_z_coord_exact_height_ = 1.9;
 
 };
 

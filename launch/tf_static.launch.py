@@ -1,11 +1,17 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
-import os
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+
 
 def generate_launch_description():
-    ns_vehicle = "lexus3"
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'tf_static_ns',
+            default_value='lexus3',
+            description='Namespace for static transforms'),
+
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
@@ -20,8 +26,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',      'map',
-                '--child-frame-id','map_gyor_0'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/map'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/map_gyor_0']
             ],
         ),
         Node(
@@ -38,8 +44,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',       'map',
-                '--child-frame-id', 'map_zala_0'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/map'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/map_zala_0']
             ],
         ),
         Node(
@@ -56,8 +62,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','duro_gps'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/duro_gps']
             ],
         ),
         Node(
@@ -75,8 +81,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',      'gps',
-                '--child-frame-id','base_link'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/gps'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/base_link']
             ],
         ),
         Node(
@@ -93,8 +99,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id', 'zed_camera_link'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/zed_camera_link']
             ],
         ),
         Node(
@@ -111,8 +117,8 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','duro_gps_imu'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/duro_gps_imu']
             ],
         ),
         Node(
@@ -129,8 +135,9 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
                 
-                '--frame-id',      'base_link',
-                '--child-frame-id','ground_link'],
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/ground_link']
+            ],
         ),
         Node(
             package='tf2_ros',
@@ -145,8 +152,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','os_left_a'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/os_left_a']
             ],
         ),
         Node(
@@ -162,8 +169,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','os_right_a'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/os_right_a']
             ],
         ),
         Node(
@@ -179,8 +186,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','os_center_a'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/os_center_a']
             ],
         ),Node(
             package='tf2_ros',
@@ -195,8 +202,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','radar_front_center'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/radar_front_center']
             ],
         ),
         Node(
@@ -212,8 +219,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '3.141592654',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','radar_front_left'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/radar_front_left']
             ],
         ),
         Node(
@@ -229,8 +236,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','radar_front_right'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/radar_front_right']
             ],
         ),
         Node(
@@ -246,8 +253,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','radar_rear_left'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/radar_rear_left']
             ],
         ),
         Node(
@@ -263,8 +270,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '3.141592654',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','radar_rear_right'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/radar_rear_right']
             ],
         ),
         Node(
@@ -280,8 +287,8 @@ def generate_launch_description():
                 '--pitch', '0.0',
                 '--roll',  '-0.0174533',
 
-                '--frame-id',      'base_link',
-                '--child-frame-id','luminar_lidar_0'
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/luminar_lidar_0']
             ],
         ),
          Node(

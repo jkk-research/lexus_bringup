@@ -21,11 +21,11 @@ class CurrentPoseFromTf : public rclcpp::Node
 public:
     CurrentPoseFromTf() : Node("current_pose_from_tf_node")
     {
-        tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
-        tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+        m_tfBuffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+        m_tfListener_ = std::make_shared<tf2_ros::TransformListener>(*m_tfBuffer_);
         // Call timer_callback function 50 milliseconds
-        timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&CurrentPoseFromTf::timer_callback, this));
-        pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/current_pose", 10);
+        m_timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&CurrentPoseFromTf::timer_callback, this));
+        m_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/current_pose", 10);
         RCLCPP_INFO_STREAM(this->get_logger(), "current_pose_from_tf node started");
     }
 
@@ -36,7 +36,7 @@ private:
         geometry_msgs::msg::TransformStamped transformStamped;
         try
         {
-            transformStamped = tf_buffer_->lookupTransform(frame_id_, child_frame_id_, tf2::TimePointZero);
+            transformStamped = m_tfBuffer_->lookupTransform(m_frame_id_, m_child_frame_id_, tf2::TimePointZero);
         }
 
         catch (const tf2::TransformException &ex)
@@ -54,7 +54,7 @@ private:
         current_pose.header.frame_id = "map";
         current_pose.header.stamp = this->get_clock()->now();
         //RCLCPP_INFO_STREAM(this->get_logger(), "current_pose: " << std::fixed << std::setprecision(2) << current_pose.position.x << ", " << current_pose.position.y);
-        pose_pub_->publish(current_pose);
+        m_pose_pub_->publish(current_pose);
     }
 
     void timer_callback()
@@ -63,14 +63,14 @@ private:
         getTransform();
     }
  
-    rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
-    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
-    std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
+    rclcpp::TimerBase::SharedPtr m_timer_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_pose_pub_;
+    std::unique_ptr<tf2_ros::Buffer> m_tfBuffer_;
+    std::shared_ptr<tf2_ros::TransformListener> m_tfListener_{nullptr};
     geometry_msgs::msg::PoseStamped current_pose;
     // TODO: parameters 
-    std::string frame_id_ = "map";
-    std::string child_frame_id_ = "lexus3/base_link";
+    std::string m_frame_id_ = "map";
+    std::string m_child_frame_id_ = "lexus3/base_link";
 };
 
 int main(int argc, char **argv)

@@ -15,28 +15,32 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import (IncludeLaunchDescription, GroupAction)
+from launch.actions import (IncludeLaunchDescription, GroupAction, DeclareLaunchArgument)
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import PushRosNamespace
-
-ns_vehicle = "lexus3"
+from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
+    
+    zed_namespace_arg = DeclareLaunchArgument(
+        'zed_ns',
+        default_value='lexus3/camera/zed',
+        description='Namespace for the ZED camera node')
 
     # Camera model (force value)
     camera_model = 'zed2i'
     bringup_cmd_group = GroupAction(
         [
             PushRosNamespace(
-                namespace = ns_vehicle,
+                namespace = LaunchConfiguration('zed_ns'),
             ),
 
             # ZED Wrapper node
             IncludeLaunchDescription(
                 launch_description_source=PythonLaunchDescriptionSource([
                     get_package_share_directory('lexus_bringup'),
-                    '/launch/drivers/zed_default_a_common.launch.py'
+                    '/launch/drivers/cam_zed_driver.launch.py'
                 ]),
                 launch_arguments={
                     'camera_model': camera_model,
@@ -46,12 +50,7 @@ def generate_launch_description():
     )
 
     # Define LaunchDescription variable
-    ld = LaunchDescription()
-
-    # Add the actions to launch all of the navigation nodes
-    ld.add_action(bringup_cmd_group)
-
-    # Add nodes to LaunchDescription
-    # ld.add_action(zed_wrapper_launch)
-
-    return ld
+    return LaunchDescription([
+        zed_namespace_arg,
+        bringup_cmd_group
+    ])

@@ -19,8 +19,8 @@ lexus_bringup_pkg_dir = get_package_share_directory('lexus_bringup')
 
 
 class CameraConfig(BaseModel):
-    name: str = 'camera8'
-    param_path: Path = Path(lexus_bringup_pkg_dir, 'config', 'tieriv_c2_camera_params_8.yaml')
+    name: str = 'camera1'
+    param_path: Path = Path(lexus_bringup_pkg_dir, 'config', 'camera', 'tieriv_c2_camera_params_1.yaml')
     remappings: Optional[List]
     namespace: Optional[str]
 
@@ -56,7 +56,7 @@ CAMERAS = []
 CAMERAS.append(
     CameraConfig(
         name='camera0',
-        param_path=Path(lexus_bringup_pkg_dir, 'config', 'tieriv_c2_camera_params_0.yaml')
+        param_path=Path(lexus_bringup_pkg_dir, 'config', 'camera', 'tieriv_c2_camera_params_0.yaml')
     )
 )    
 ## sleep to allow multiple cameras to be recognized
@@ -64,7 +64,7 @@ CAMERAS.append(
 CAMERAS.append(
     CameraConfig(
         name='camera1',
-        param_path=Path(lexus_bringup_pkg_dir, 'config', 'tieriv_c2_camera_params_1.yaml')
+        param_path=Path(lexus_bringup_pkg_dir, 'config', 'camera', 'tieriv_c2_camera_params_1.yaml')
     )
     # Add more Camera's here and they will automatically be launched below
 )

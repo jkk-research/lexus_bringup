@@ -37,8 +37,9 @@ from launch_ros.actions import Node
 default_config_common = os.path.join(
     get_package_share_directory('lexus_bringup'),
     'launch',
-    'drivers',
-    'zed_default_a_common.yaml'
+    'config',
+    'camera',
+    'zed_default_common.yaml'
 )
 
 # URDF/xacro file to be loaded by the Robot State Publisher node
