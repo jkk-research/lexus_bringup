@@ -1,56 +1,45 @@
-# Copyright 2022 Stereolabs
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import os
 
 from launch import LaunchDescription
-from launch.actions import (IncludeLaunchDescription, GroupAction, DeclareLaunchArgument)
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from ament_index_python.packages import get_package_share_directory
-from launch_ros.actions import PushRosNamespace
 from launch.substitutions import LaunchConfiguration
+from ament_index_python.packages import get_package_share_directory
+
 
 def generate_launch_description():
-    
-    zed_namespace_arg = DeclareLaunchArgument(
+    zed_ns_arg = DeclareLaunchArgument(
         'zed_ns',
         default_value='lexus3/camera/zed',
-        description='Namespace for the ZED camera node')
-
-    # Camera model (force value)
-    camera_model = 'zed2i'
-    bringup_cmd_group = GroupAction(
-        [
-            PushRosNamespace(
-                namespace = LaunchConfiguration('zed_ns'),
-            ),
-
-            # ZED Wrapper node
-            IncludeLaunchDescription(
-                launch_description_source=PythonLaunchDescriptionSource([
-                    get_package_share_directory('lexus_bringup'),
-                    '/launch/drivers/cam_zed_driver.launch.py'
-                ]),
-                launch_arguments={
-                    'camera_model': camera_model,
-                }.items()
-            ),
-        ]
+        description='Full ROS namespace for the ZED camera'
     )
 
-    # Define LaunchDescription variable
+    zed_camera_name_arg = DeclareLaunchArgument(
+        'zed_camera_name',
+        default_value='zed',
+        description='Logical camera name for ZED parameters'
+    )
+
+    camera_model = 'zed2i'
+
+    zed_driver_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('lexus_bringup'),
+                'launch',
+                'drivers',
+                'cam_zed_driver.launch.py'
+            )
+        ),
+        launch_arguments={
+            'namespace': LaunchConfiguration('zed_ns'),
+            'camera_name': LaunchConfiguration('zed_camera_name'),
+            'camera_model': camera_model,
+        }.items()
+    )
+
     return LaunchDescription([
-        zed_namespace_arg,
-        bringup_cmd_group
+        zed_ns_arg,
+        zed_camera_name_arg,
+        zed_driver_launch
     ])

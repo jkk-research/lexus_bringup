@@ -9,7 +9,7 @@
       image_width: 2880
       image_height: 1860
       camera_name: "camera0"
-      camera_info_url: "file:///home/dev/ros2_ws/src/lexus_bringup/config/tieriv_c2_camera_info_0.yaml"
+      camera_info_url: "file:///home/dev/ros2_ws/src/lexus_bringup/config/camera/tieriv_c2_camera_info_0.yaml"
       brightness: -1
       contrast: -1
       saturation: -1

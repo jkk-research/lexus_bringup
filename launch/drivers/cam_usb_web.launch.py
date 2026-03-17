@@ -28,6 +28,7 @@ def generate_launch_description():
         package='usb_cam',
         executable='usb_cam_node_exe',
         name='usb_cam',
+        namespace=LaunchConfiguration('namespace'),
         output='screen',
         parameters=[
             LaunchConfiguration('params_file')

@@ -1,8 +1,8 @@
 ## runs left and right c2 cameras
-# /sensing/camera/camera0/camera_info
-# /sensing/camera/camera0/image_rect_color
-# /sensing/camera/camera1/camera_info
-# /sensing/camera/camera1/image_rect_color
+# /lexus3/camera/camera0/camera_info
+# /lexus3/camera/camera0/image_rect_color
+# /lexus3/camera/camera1/camera_info
+# /lexus3/camera/camera1/image_rect_color
 
 import argparse
 import os
@@ -37,12 +37,12 @@ class CameraConfig(BaseModel):
         if name and not remappings:
             # Automatically set remappings if name is set
             remappings = [
-                ('image_raw', f'/sensing/camera/{name}/image_rect_color'),
+                ('image_raw', f'/lexus3/camera/{name}/image_rect_color'),
                 ## TODO: not even publishing these topics?
-                ('image_raw/compressed', f'/sensing/camera/{name}/image_compressed'),
-                ('image_raw/compressedDepth', f'/sensing/camera/{name}/compressedDepth'),
-                ('image_raw/theora', f'/sensing/camera/{name}/image_raw/theora'),
-                ('camera_info', f'/sensing/camera/{name}/camera_info'),
+                ('image_raw/compressed', f'/lexus3/camera/{name}/image_compressed'),
+                ('image_raw/compressedDepth', f'/lexus3/camera/{name}/compressedDepth'),
+                ('image_raw/theora', f'/lexus3/camera/{name}/image_raw/theora'),
+                ('camera_info', f'/lexus3/camera/{name}/camera_info'),
             ]
         values['remappings'] = remappings
         return values
