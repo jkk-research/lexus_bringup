@@ -16,7 +16,7 @@ def generate_launch_description():
 
     zed_camera_name_arg = DeclareLaunchArgument(
         'zed_camera_name',
-        default_value='zed',
+        default_value='lexus3_zed',
         description='Logical camera name for ZED parameters'
     )
 

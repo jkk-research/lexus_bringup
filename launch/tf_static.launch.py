@@ -2,6 +2,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
+from math import pi
 
 
 def generate_launch_description():
@@ -106,6 +107,25 @@ def generate_launch_description():
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
+            name='zed_camera_temporary', # TODO: 
+            output='screen',
+            arguments=[
+                '--x',  '0.0',
+                '--y',  '0.0',
+                '--z',  '0.0',
+                '--qx', '0.0',
+                '--qy', '0.0',
+                '--qz', '0.0',
+                '--qw', '1.0',
+
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/zed_camera_link'],
+                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '_zed_camera_link']
+            ],
+        ),
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
             name='duro_gps_imu_tf_publisher',
             output='screen',
             arguments=[
@@ -148,7 +168,7 @@ def generate_launch_description():
                 '--x',     '0.75',
                 '--y',     '0.5',
                 '--z',     '1.3',
-                '--yaw',   '0.0',
+                '--yaw',   '-3.1415926535',
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
@@ -165,7 +185,7 @@ def generate_launch_description():
                 '--x',     '1.53',
                 '--y',     '-0.5',
                 '--z',     '1.41',
-                '--yaw',   '0.0',
+                '--yaw',   '-3.1415926535',
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
@@ -182,7 +202,7 @@ def generate_launch_description():
                 '--x',     '0.75',
                 '--y',     '0.0',
                 '--z',     '1.91',
-                '--yaw',   '0.0',
+                '--yaw',   '-3.1415926535',
                 '--pitch', '0.0',
                 '--roll',  '0.0',
 
@@ -217,7 +237,7 @@ def generate_launch_description():
                 '--z',     '0.0',
                 '--yaw',   '1.04719755',
                 '--pitch', '0.0',
-                '--roll',  '3.141592654',
+                '--roll',  '0.0',
 
                 '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
                 '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/radar_front_left']
@@ -283,9 +303,9 @@ def generate_launch_description():
                 '--x',     '1.43',
                 '--y',     '-0.3',
                 '--z',     '1.41',
-                '--yaw',   '0.0',
+                '--yaw',   '-0.0174533',
                 '--pitch', '0.0',
-                '--roll',  '-0.0174533',
+                '--roll',  '0.0',
 
                 '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
                 '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/luminar_lidar_0']
