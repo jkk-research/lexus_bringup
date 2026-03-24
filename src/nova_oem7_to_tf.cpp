@@ -31,21 +31,29 @@ public:
         this->declare_parameter<std::string>("frame_id", "map");
         this->declare_parameter<std::string>("child_frame_id", "lexus3/base_link");
         this->declare_parameter<std::string>("z_coord_ref_switch", "orig");
+        this->declare_parameter<std::string>("pose_topic_pub", "lexus3/gps/nova/current_pose");
+        this->declare_parameter<std::string>("utm_topic_sub", "lexus3/gps/nova/bestutm");
+        this->declare_parameter<std::string>("inspva_topic_sub", "lexus3/gps/nova/inspva");
+
         this->get_parameter("x_coord_offset", m_x_coord_offset_);
         this->get_parameter("y_coord_offset", m_y_coord_offset_);
         this->get_parameter("z_coord_exact_height", m_z_coord_exact_height_);
         this->get_parameter("frame_id", m_frame_id_);
         this->get_parameter("child_frame_id", m_child_frame_id_);
         this->get_parameter("z_coord_ref_switch", m_z_coord_ref_switch_);
+        this->get_parameter("pose_topic_pub", m_pose_topic_);
+        this->get_parameter("utm_topic_sub", m_utm_topic_);
+        this->get_parameter("inspva_topic_sub", m_inspva_topic_);
 
-       
-        m_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("lexus3/gps/nova/current_pose", 10);
-        m_utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>("/novatel/oem7/bestutm", 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
-        m_inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>("/novatel/oem7/inspva", 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
+        m_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(m_pose_topic_, 10);
+        m_utm_sub_ = this->create_subscription<novatel_oem7_msgs::msg::BESTUTM>(m_utm_topic_, 10, std::bind(&CurrentPoseFromTf::utm_callback, this, _1));
+        m_inspva_sub_ = this->create_subscription<novatel_oem7_msgs::msg::INSPVA>(m_inspva_topic_, 10, std::bind(&CurrentPoseFromTf::inspva_callback, this, _1));
         m_tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         RCLCPP_INFO_STREAM(this->get_logger(), "nova_oem7_to_tf node started");
         RCLCPP_INFO_STREAM(this->get_logger(), "nova coord offset: " << m_x_coord_offset_ << ", " << m_y_coord_offset_ << ", " << m_z_coord_exact_height_);
         RCLCPP_INFO_STREAM(this->get_logger(), "nova frame_id: " << m_frame_id_ << ", child_frame_id: " << m_child_frame_id_);
+        RCLCPP_INFO_STREAM(this->get_logger(), "nova utm_topic: " << m_utm_topic_);
+        
         if (m_z_coord_ref_switch_.compare("exact") == 0){
             RCLCPP_INFO_STREAM(this->get_logger(), "nova exact height (z): " << m_z_coord_exact_height_);
         }
@@ -127,6 +135,9 @@ private:
     double m_x_coord_offset_ = 0.0;
     double m_y_coord_offset_ = 0.0;
     double m_z_coord_exact_height_ = 1.9;
+    std::string m_pose_topic_ = "/lexus3/gps/nova/current_pose";
+    std::string m_utm_topic_ = "/lexus3/nova/bestutm";
+    std::string m_inspva_topic_ = "/lexus3/nova/inspva";
 
 };
 
