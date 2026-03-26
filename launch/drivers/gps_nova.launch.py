@@ -41,8 +41,8 @@ def arg(name, default_value, description):
 def generate_launch_description():
 
     nova_node = Node(
-        package = PKG,
-        namespace = lx_nova_namespace,
+        package=PKG,
+        namespace=lx_nova_namespace,
         name='main',
         executable='novatel_oem7_driver_exe',
 
@@ -83,22 +83,31 @@ def generate_launch_description():
     )
 
     convert_node = Node(
-        package = "lexus_bringup",
-        namespace = lx_nova_namespace,
+        package="lexus_bringup",
+        namespace=lx_nova_namespace,
         name='gps_convert',
         executable='nova_oem7_to_tf',
         parameters=[
              {
-                   'use_sim_time': False,
-                   'x_coord_offset': -697237.0,
-                   'y_coord_offset': -5285644.0,
-                   'z_coord_exact_height': 1.9,
-                   'frame_id': 'map',
-                   'child_frame_id': 'lexus3/base_link',
-                   'z_coord_ref_switch': 'orig',
-                   'pose_topic_pub': 'current_pose',
-                   'utm_topic_sub': 'bestutm',
-                   'inspva_topic_sub': 'inspva'
+                'use_sim_time': False,
+                'x_coord_offset': -697237.0,  # map_gyor_0
+                # 'x_coord_offset': -639770.0, # map_zala_0
+                'y_coord_offset': -5285644.0,  # map_gyor_0
+                # 'y_coord_offset': -5195040.0, # map_zala_0
+                'z_coord_exact_height': 1.9,
+                'z_coord_offset_plus': -112.0,
+                'frame_id': 'map',
+                'child_frame_id': 'lexus3/base_link',
+                # z_coord_ref_switch can be exact / zero_based / orig / orig_offset
+                # exact: the Z coorindinate is always z_coord_exact_height param (must be set in this launch)
+                # zero_based: Z coordinate starts from 0 and relative
+                # orig: the original Z provided by sensor
+                # orig_offset: the original Z plus a fixed offset
+                'z_coord_ref_switch': 'orig_offset',
+                'pose_topic_pub': 'current_pose',
+                'utm_topic_sub': 'bestutm',
+                'inspva_topic_sub': 'inspva',
+                'debug_publish': False,
              }
         ]
     )
