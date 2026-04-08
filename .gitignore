@@ -56,3 +56,5 @@ CATKIN_IGNORE
 
 # vs code 
 .vscode/**
+
+.venv/
