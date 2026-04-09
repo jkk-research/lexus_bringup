@@ -2,7 +2,7 @@ site_name: My Docs
 
 nav:
   - Home: index.md
-  - Quick Start Guide: quick_start_guide.md
+  - Quick Start Guide: quick_start.md
   - Wiki:
       - Sensorset 2026.L: wiki/sensorset2026-l.md
       - Pacmod 3: wiki/pacmod_actuation.md
