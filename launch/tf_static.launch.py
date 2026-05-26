@@ -27,8 +27,10 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/map'],
-                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/map_gyor_0']
+                 # '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/map'],
+                # '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/map_gyor_0']
+                 '--frame-id',        '/map',
+                 '--child-frame-id',  '/map_gyor_0'
             ],
         ),
         Node(
@@ -45,8 +47,10 @@ def generate_launch_description():
                 '--qz', '0.0',
                 '--qw', '1.0',
 
-                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/map'],
-                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/map_zala_0']
+                # '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/map'],
+                # '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/map_zala_0']
+                '--frame-id',        '/map',
+                '--child-frame-id',  '/map_zala_0'
             ],
         ),
         Node(
@@ -309,6 +313,40 @@ def generate_launch_description():
 
                 '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
                 '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/luminar_lidar_0']
+            ],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='c2_left_static',
+            output='screen',
+            arguments=[
+                '--x',     '1.53',
+                '--y',     '0.57',
+                '--z',     '1.1',
+                '--yaw',   '-1.29154',
+                '--pitch', '0.0',
+                '--roll',  '-1.57079632679',
+
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id',  '/c2_camera_left_link'
+            ],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='c2_right_static',
+            output='screen',
+            arguments=[
+                '--x',     '1.53',
+                '--y',     '-0.57',
+                '--z',     '1.1',
+                '--yaw',   '-1.85005',
+                '--pitch', '0.0',
+                '--roll',  '-1.57079632679',
+
+                '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
+                '--child-frame-id',  '/c2_camera_right_link'
             ],
         ),
        Node(
