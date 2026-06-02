@@ -5,7 +5,7 @@
       io_method: "mmap"
       frame_id: "c2_camera_left_link"
       pixel_format: "uyvy"  # see usb_cam/supported_formats for list of supported formats
-      av_device_format: "UYVY422"
+      av_device_format: "UYVY422" #TODO: MJPEG or smth to fix bw issue
       image_width: 2880
       image_height: 1860
       camera_name: "camera0"

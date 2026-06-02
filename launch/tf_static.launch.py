@@ -312,7 +312,8 @@ def generate_launch_description():
                 '--roll',  '0.0',
 
                 '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
-                '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/luminar_lidar_0']
+                # '--child-frame-id', [LaunchConfiguration('tf_static_ns'), '/luminar_lidar_0']
+                '--child-frame-id', '/luminar_lidar_0'
             ],
         ),
         Node(
