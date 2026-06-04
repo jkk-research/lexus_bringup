@@ -322,12 +322,13 @@ def generate_launch_description():
             name='c2_left_static',
             output='screen',
             arguments=[
-                '--x',     '1.53',
-                '--y',     '0.57',
-                '--z',     '1.1',
-                '--yaw',   '-1.29154',
-                '--pitch', '0.0',
-                '--roll',  '-1.57079632679',
+                '--x',  '1.551432',
+                '--y',  '0.320950',
+                '--z',  '1.222142',
+                '--qx', '-0.561454',
+                '--qy', '0.422821',
+                '--qz', '-0.427920',
+                '--qw', '0.568222',
 
                 '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
                 '--child-frame-id',  '/c2_camera_left_link'
@@ -339,12 +340,13 @@ def generate_launch_description():
             name='c2_right_static',
             output='screen',
             arguments=[
-                '--x',     '1.53',
-                '--y',     '-0.57',
-                '--z',     '1.1',
-                '--yaw',   '-1.85005',
-                '--pitch', '0.0',
-                '--roll',  '-1.57079632679',
+                '--x',  '1.465649',
+                '--y',  '-0.482122',
+                '--z',  '1.258421',
+                '--qx', '-0.415844',
+                '--qy', '0.559041',
+                '--qz', '-0.568532',
+                '--qw', '0.437400',
 
                 '--frame-id',       [LaunchConfiguration('tf_static_ns'), '/base_link'],
                 '--child-frame-id',  '/c2_camera_right_link'
