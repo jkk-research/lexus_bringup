@@ -1,0 +1,27 @@
+/**:
+  ros__parameters:
+
+    # TODO: Fill params
+    
+    config/config_data: 2               # Provide the information with regards of the VehicleConfiging position
+                                        #   SIGNAL_NOT_AVAILABLE = 0x0,
+                                        #   FRONT_CENTER         = 0x1,
+                                        #   FRONT_LEFT           = 0x2,
+                                        #   FRONT_RIGHT          = 0x3,
+                                        #   REAR_LEFT            = 0x4,
+                                        #   REAR_RIGHT           = 0x5,
+                                        #   RESERVED6            = 0x6,
+                                        #   RESERVED7            = 0x7,
+    config/pos_x : 3.5                  # Nominal VehicleConfiging position in the lateral direction in vehicle road-level coordinate system (meters)
+    config/pos_y : 0.835                  # Nominal VehicleConfiging position in the longitudinal direction in vehicle road-level coordinate system (meters)
+    config/pos_z : 0.64                  # Nominal VehicleConfiging position in the vertical direction in vehicle road-level coordinate system (meters)
+    config/orient_yaw : 1.04719755             # Nominal Sensor VehicleConfiging azimuth angle (radians)
+    config/orient_pitch : 0.0           # Nominal Sensor VehicleConfiging elevation (pitch) angle (radians)
+    config/dxv_front_bumper : 3.8       # Longitudinal distance to the front bumper in the vehicle coordinate system with origin at center of the rear axle (meters)
+    config/dxv_rear_bumper : -0.9       # Longitudinal distance to the rear bumper in the vehicle coordinate system with origin at center of the rear axle (meters)
+    config/acc_long_sens_pos : 0.0      # Longitudinal mounting position of the longitudinal acceleration sensor in vehicle coordinate system with origin middle of the rear axis (meters)
+    config/wheel_base : 2.79            # Longitudinal distance between front and rear axles (meters)
+    config/sns_time_offset : 0.0        # Time offset between overall start of the current cycle and start of modulation for the sensor (milliseconds)
+    config/sensor_orientation: 1        # Orientation of the sensor
+                                        #   NORMAL  = 0x0,
+                                        #   FLIPPED = 0x1
