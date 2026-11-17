@@ -1,0 +1,26 @@
+[data-md-color-scheme="youtube"] {
+  /* Primary color shades */
+  --md-primary-fg-color: #43AEC5;
+  --md-primary-fg-color--light: #9fd4e0;
+  --md-primary-fg-color--dark: #182744;
+
+  /* Accent color shades */
+  --md-accent-fg-color: #43AEC5;
+}
+
+:root > * {
+  /* Footer */
+  --md-footer-bg-color: #182744;
+  --md-footer-bg-color--dark: #182744;
+  --md-footer-fg-color: #43AEC5;
+  --md-footer-fg-color--light: #b9e7f2;
+  --md-footer-fg-color--lighter: #d9eef3;
+}
+
+.sze-color-primary {
+  color: #43AEC5;
+}
+
+.sze-color {
+  color: #43AEC5;
+}
