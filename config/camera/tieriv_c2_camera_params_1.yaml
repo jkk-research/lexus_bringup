@@ -4,7 +4,7 @@
       framerate: 10.0
       io_method: "mmap"
       frame_id: "c2_camera_right_link"
-      pixel_format: "uyvy"  # see usb_cam/supported_formats for list of supported formats
+      pixel_format: "uyvy2rgb"  # see usb_cam/supported_formats for list of supported formats
       av_device_format: "UYVY422"
       image_width: 2880
       image_height: 1860
